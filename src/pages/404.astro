@@ -1,0 +1,28 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+	title="Page not found — Tip Calculator With Tax"
+	description="The page you were looking for could not be found."
+	path="/404/"
+	noindex={true}
+>
+	<Header />
+	<main id="main" class="page">
+		<div class="container page__inner">
+			<p class="eyebrow">Error 404</p>
+			<h1 class="page__title">This page has gone for a coffee</h1>
+			<p class="section-lead">
+				The link you followed does not exist any more. Head back to the calculator and split
+				that bill.
+			</p>
+			<p style="margin-top: 24px">
+				<a class="btn btn-primary btn-pill" href="/#calculator">Open the calculator</a>
+			</p>
+		</div>
+	</main>
+	<Footer />
+</Layout>

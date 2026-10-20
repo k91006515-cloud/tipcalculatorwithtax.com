@@ -1,0 +1,51 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+	title="About Us — Tip Calculator With Tax"
+	description="Learn about the team and mission behind Tip Calculator With Tax."
+	path="/about/"
+>
+	<Header />
+
+	<main id="main" class="page">
+		<div class="container page__inner">
+			<p class="eyebrow">About</p>
+			<h1 class="page__title">About Us</h1>
+			<p class="page__meta">Last updated: 20 October 2026</p>
+
+			<div class="prose">
+				<h2>Our Mission</h2>
+				<p>
+					Our mission is to provide a simple, private, and free tip calculator that works
+					everywhere. We believe calculating tips shouldn't require an account, your data,
+					or intrusive trackers.
+				</p>
+
+				<h2>Privacy by Design</h2>
+				<p>
+					All calculations happen entirely in your browser. We never collect your bill
+					amount, email, or any personal information. Your preferences are stored only
+					in your local browser storage.
+				</p>
+
+				<h2>Built with Care</h2>
+				<p>
+					This project is maintained by a small team of developers who want to make
+					tipping easier for everyone, regardless of currency or location.
+				</p>
+
+				<h2>Get in Touch</h2>
+				<p>
+					We'd love to hear your feedback, suggestions, or questions. Reach out to us
+					at <a href="mailto:hello@tipcalculatorwithtax.com">hello@tipcalculatorwithtax.com</a>.
+				</p>
+			</div>
+		</div>
+	</main>
+
+	<Footer />
+</Layout>

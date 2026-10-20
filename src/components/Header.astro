@@ -1,0 +1,244 @@
+---
+import CurrencySelect from './CurrencySelect.astro';
+import ThemeToggle from './ThemeToggle.astro';
+---
+
+<header class="nav" id="site-nav">
+	<div class="container nav__inner">
+		<a class="nav__brand" href="/" aria-label="Tip Calculator With Tax home">
+			<img
+				class="nav__mark"
+				src="/favicon-96x96.png"
+				alt="Tip Calculator With Tax favicon"
+				width="18"
+				height="18"
+				aria-hidden="true"
+			/>
+			<span class="nav__wordmark">Tip Calculator With Tax</span>
+		</a>
+
+		<nav class="nav__links" aria-label="Main">
+			<a href="#calculator">Calculator</a>
+			<a href="#how-it-works">How it works</a>
+			<a href="#tip-guide">Tip guide</a>
+			<a href="#faq">FAQ</a>
+		</nav>
+
+		<div class="nav__actions">
+			<div class="nav__currency-slot">
+				<CurrencySelect id="nav-currency" compact />
+			</div>
+			<ThemeToggle />
+			<button
+				class="nav__menu-button"
+				type="button"
+				data-menu-toggle
+				aria-expanded="false"
+				aria-controls="nav-mobile-menu"
+				aria-label="Open menu"
+			>
+				<svg
+					width="16"
+					height="16"
+					viewBox="0 0 16 16"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+					aria-hidden="true"
+				>
+					<path
+						d="M2 4h12M2 8h12M2 12h12"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"></path>
+				</svg>
+			</button>
+		</div>
+	</div>
+
+	<div class="nav__mobile" id="nav-mobile-menu" data-mobile-menu hidden>
+		<a href="#calculator">Calculator</a>
+		<a href="#how-it-works">How it works</a>
+		<a href="#tip-guide">Tip guide</a>
+		<a href="#faq">FAQ</a>
+		<div class="nav__mobile-currency">
+			<span class="nav__mobile-label">Currency</span>
+			<CurrencySelect id="mobile-currency" compact />
+		</div>
+	</div>
+</header>
+
+<style>
+	.nav {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: color-mix(in srgb, var(--canvas) 88%, transparent);
+		backdrop-filter: saturate(180%) blur(12px);
+		-webkit-backdrop-filter: saturate(180%) blur(12px);
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	.nav__inner {
+		display: flex;
+		align-items: center;
+		gap: var(--s-lg);
+		height: var(--nav-h);
+	}
+
+	.nav__brand {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-xs);
+		min-width: 0;
+		color: var(--ink);
+		font-size: 15px;
+		font-weight: 600;
+		letter-spacing: -0.2px;
+	}
+
+	.nav__brand:hover {
+		color: var(--ink);
+	}
+
+	.nav__wordmark {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.nav__mark {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		border-radius: var(--r-sm);
+		background: var(--ink);
+		color: var(--canvas);
+	}
+
+	.nav__links {
+		display: flex;
+		align-items: center;
+		gap: var(--s-xs);
+		margin-right: auto;
+	}
+
+	.nav__links a {
+		padding: 6px 12px;
+		border-radius: var(--r-full);
+		color: var(--body);
+		font-size: 14px;
+		line-height: 20px;
+		transition:
+			background-color 0.15s ease,
+			color 0.15s ease;
+	}
+
+	.nav__links a:hover {
+		background: var(--surface-2);
+		color: var(--ink);
+	}
+
+	.nav__actions {
+		display: flex;
+		align-items: center;
+		gap: var(--s-xs);
+		margin-left: auto;
+	}
+
+	.nav__currency-slot {
+		display: flex;
+		min-width: 0;
+	}
+
+	.nav__menu-button {
+		display: none;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-sm);
+		background: var(--surface);
+		color: var(--ink);
+		cursor: pointer;
+	}
+
+	.nav__mobile {
+		display: none;
+		flex-direction: column;
+		padding: var(--s-xs) var(--s-lg) var(--s-md);
+		border-top: 1px solid var(--hairline);
+		background: var(--canvas);
+	}
+
+	.nav__mobile a {
+		padding: 10px 0;
+		color: var(--body);
+		font-size: 15px;
+		border-bottom: 1px solid var(--hairline-soft);
+	}
+
+	.nav__mobile-currency {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--s-md);
+		padding-top: var(--s-md);
+	}
+
+	.nav__mobile-label {
+		color: var(--mute);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	@media (max-width: 900px) {
+		.nav__links {
+			display: none;
+		}
+
+		.nav__currency-slot {
+			display: none;
+		}
+
+		.nav__menu-button {
+			display: inline-flex;
+		}
+
+		.nav__mobile:not([hidden]) {
+			display: flex;
+		}
+	}
+
+	@media (max-width: 520px) {
+		.nav__wordmark {
+			font-size: 14px;
+		}
+	}
+</style>
+
+<script>
+	const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+	const menu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+
+	toggle?.addEventListener('click', () => {
+		if (!menu) return;
+		const open = toggle.getAttribute('aria-expanded') === 'true';
+		toggle.setAttribute('aria-expanded', String(!open));
+		toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+		menu.hidden = open;
+	});
+
+	menu?.querySelectorAll('a').forEach((link) => {
+		link.addEventListener('click', () => {
+			toggle?.setAttribute('aria-expanded', 'false');
+			toggle?.setAttribute('aria-label', 'Open menu');
+			menu.hidden = true;
+		});
+	});
+</script>

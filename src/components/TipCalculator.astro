@@ -1,0 +1,777 @@
+---
+import { CURRENCIES, CURRENCY_REGIONS } from '../data/currencies';
+
+const tipPresets = [0, 10, 15, 18, 20, 25, 30, 50];
+const roundingOptions = [
+	{ value: 'off', label: 'Off' },
+	{ value: 'up', label: 'Up' },
+	{ value: 'down', label: 'Down' },
+	{ value: 'nearest', label: 'Nearest' },
+];
+const quickAmounts = [20, 50, 100, 200];
+---
+
+<section class="calc" id="calculator" data-stc-calculator aria-labelledby="calc-heading">
+	<h2 class="sr-only" id="calc-heading">Tip calculator</h2>
+
+	<noscript>
+		<p class="calc__noscript">
+			The calculator needs JavaScript to run. You can still work it out by hand: tip = bill ×
+			percentage, then divide (bill + tip) by the number of people.
+		</p>
+	</noscript>
+
+	<div class="calc__grid">
+		<div class="calc__panel">
+			<div class="field">
+				<label class="field__label" for="bill-amount">Bill amount</label>
+				<div class="amount">
+					<label class="amount__currency">
+						<span class="sr-only">Currency</span>
+						<select data-stc-currency aria-label="Currency">
+							{
+								CURRENCY_REGIONS.map((region) => (
+									<optgroup label={region}>
+										{CURRENCIES.filter((currency) => currency.region === region).map(
+											(currency) => (
+												<option value={currency.code}>
+													{currency.symbol} {currency.code}
+												</option>
+											),
+										)}
+									</optgroup>
+								))
+							}
+						</select>
+						<svg
+							aria-hidden="true"
+							width="12"
+							height="12"
+							viewBox="0 0 12 12"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M3 4.5 6 7.5 9 4.5"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"></path>
+						</svg>
+					</label>
+					<input
+						class="amount__input"
+						id="bill-amount"
+						type="text"
+						inputmode="decimal"
+						autocomplete="off"
+						spellcheck="false"
+						placeholder="0.00"
+						data-field="bill"
+					/>
+				</div>
+				<div class="quick">
+					<span class="quick__label">Quick amounts</span>
+					{
+						quickAmounts.map((amount) => (
+							<button type="button" data-quick-amount={amount} title={`Set the bill to ${amount}`}>
+								{amount}
+							</button>
+						))
+					}
+				</div>
+			</div>
+
+			<div class="field">
+				<span class="field__label" id="tip-label">Tip percentage</span>
+				<div class="presets" role="group" aria-labelledby="tip-label">
+					{
+						tipPresets.map((preset) => (
+							<button
+								type="button"
+								class="preset"
+								data-tip-preset={preset}
+								aria-pressed="false"
+							>
+								{preset}%
+							</button>
+						))
+					}
+				</div>
+				<div class="tip-custom">
+					<label class="tip-custom__label" for="tip-percent">Custom tip</label>
+					<div class="tip-custom__control">
+						<input
+							id="tip-percent"
+							type="number"
+							inputmode="decimal"
+							min="0"
+							max="500"
+							step="1"
+							value="20"
+							data-field="tip"
+						/>
+						<span class="tip-custom__suffix" aria-hidden="true">%</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="field">
+				<span class="field__label" id="tax-label">Tax percentage</span>
+				<div class="tip-custom">
+					<label class="tip-custom__label" for="tax-percent">Custom tax</label>
+					<div class="tip-custom__control">
+						<input
+							id="tax-percent"
+							type="number"
+							inputmode="decimal"
+							min="0"
+							max="100"
+							step="0.01"
+							value="0"
+							data-field="tax"
+						/>
+						<span class="tip-custom__suffix" aria-hidden="true">%</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="field">
+				<label class="field__label" for="people-count">Number of people</label>
+				<div class="stepper">
+					<button type="button" data-action="people-dec" aria-label="One person fewer">−</button>
+					<input
+						id="people-count"
+						type="number"
+						inputmode="numeric"
+						min="1"
+						max="999"
+						step="1"
+						value="1"
+						data-field="people"
+					/>
+					<button type="button" data-action="people-inc" aria-label="One person more">+</button>
+				</div>
+			</div>
+
+			<div class="field">
+				<span class="field__label" id="rounding-label">Round the per-person total</span>
+				<div class="segmented" role="radiogroup" aria-labelledby="rounding-label">
+					{
+						roundingOptions.map((option) => (
+							<label class="segmented__option">
+								<input type="radio" name="stc-rounding" value={option.value} checked={option.value === 'off'} />
+								<span>{option.label}</span>
+							</label>
+						))
+					}
+				</div>
+			</div>
+		</div>
+
+		<div class="calc__result">
+			<div class="result__head">
+				<p class="result__caption" data-out="per-person-caption">Total to pay</p>
+				<button
+					class="result__copy"
+					type="button"
+					data-action="copy"
+					title="Copy the amount each person pays"
+				>
+					Copy
+				</button>
+			</div>
+
+			<p class="result__amount" data-out="per-person" role="status" aria-atomic="true">$0.00</p>
+
+			<dl class="result__rows">
+				<div class="result__row">
+					<dt>Tip</dt>
+					<dd data-out="tip">$0.00</dd>
+				</div>
+				<div class="result__row">
+					<dt>Tax</dt>
+					<dd data-out="tax">$0.00</dd>
+				</div>
+				<div class="result__row">
+					<dt>Total</dt>
+					<dd data-out="total">$0.00</dd>
+				</div>
+				<div class="result__row">
+					<dt>Tip per person</dt>
+					<dd data-out="tip-per-person">$0.00</dd>
+				</div>
+			</dl>
+
+			<div class="result__split" data-out="split" hidden>
+				<div class="split__bar" data-out="split-bar" aria-hidden="true"></div>
+				<p class="split__legend" data-out="split-legend"></p>
+			</div>
+
+			<p class="result__formula" data-out="formula"></p>
+			<p class="result__note" data-out="rounding-note" hidden></p>
+
+			<div class="result__actions">
+				<button class="result__action" type="button" data-action="copy-link" title="Copy a link that opens this split">
+					Copy link
+				</button>
+				<button class="result__action" type="button" data-action="reset">Reset</button>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.calc {
+		width: 100%;
+	}
+
+	.calc__noscript {
+		margin-bottom: var(--s-md);
+		padding: var(--s-md);
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-md);
+		background: var(--surface);
+		color: var(--body);
+		font-size: 14px;
+		line-height: 22px;
+	}
+
+	.calc__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+		gap: 1px;
+		background: var(--hairline);
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-lg);
+		overflow: hidden;
+		box-shadow: var(--shadow-3);
+	}
+
+	.calc__panel {
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-lg);
+		padding: var(--s-xl);
+		background: var(--surface);
+	}
+
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-xs);
+	}
+
+	.field__label {
+		color: var(--ink);
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 20px;
+	}
+
+	.amount {
+		display: flex;
+		align-items: stretch;
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-md);
+		background: var(--surface);
+		transition:
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.amount:focus-within {
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+	}
+
+	.amount__currency {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		flex: 0 0 auto;
+		padding-left: 12px;
+		border-right: 1px solid var(--hairline);
+		color: var(--body);
+	}
+
+	.amount__currency select {
+		appearance: none;
+		-webkit-appearance: none;
+		height: 100%;
+		padding: 0 26px 0 0;
+		border: 0;
+		background: transparent;
+		color: var(--ink);
+		font-family: var(--font-mono);
+		font-size: 13px;
+		font-weight: 500;
+		cursor: pointer;
+	}
+
+	.amount__currency svg {
+		position: absolute;
+		right: 8px;
+		pointer-events: none;
+		color: var(--mute);
+	}
+
+	.amount__input {
+		flex: 1 1 auto;
+		min-width: 0;
+		padding: 10px 16px;
+		border: 0;
+		background: transparent;
+		color: var(--ink);
+		font-size: clamp(22px, 2.4vw, 27px);
+		font-weight: 600;
+		line-height: 36px;
+		letter-spacing: -0.8px;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.amount__input:focus {
+		outline: none;
+	}
+
+	.amount__input::placeholder {
+		color: var(--faint);
+	}
+
+	.quick {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--s-xs);
+	}
+
+	.quick__label {
+		margin-right: var(--s-xxs);
+		color: var(--mute);
+		font-size: 12px;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+	}
+
+	.quick button {
+		height: 28px;
+		padding: 0 10px;
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-full);
+		background: transparent;
+		color: var(--body);
+		font-size: 13px;
+		font-variant-numeric: tabular-nums;
+		cursor: pointer;
+		transition:
+			border-color 0.15s ease,
+			background-color 0.15s ease,
+			color 0.15s ease;
+	}
+
+	.quick button:hover {
+		border-color: var(--hairline-strong);
+		background: var(--surface-2);
+		color: var(--ink);
+	}
+
+	.presets {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: var(--s-xs);
+	}
+
+	.preset {
+		height: 40px;
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-sm);
+		background: var(--surface);
+		color: var(--body);
+		font-size: 14px;
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+		cursor: pointer;
+		transition:
+			background-color 0.15s ease,
+			border-color 0.15s ease,
+			color 0.15s ease;
+	}
+
+	.preset:hover {
+		border-color: var(--hairline-strong);
+		color: var(--ink);
+	}
+
+	.preset.is-active {
+		background: var(--ink);
+		border-color: var(--ink);
+		color: var(--canvas);
+	}
+
+	.tip-custom {
+		display: flex;
+		align-items: center;
+		gap: var(--s-sm);
+	}
+
+	.tip-custom__label {
+		color: var(--body);
+		font-size: 14px;
+	}
+
+	.tip-custom__control {
+		display: inline-flex;
+		align-items: center;
+		gap: 2px;
+		height: 40px;
+		padding: 0 12px 0 10px;
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-sm);
+		background: var(--surface);
+		transition:
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.tip-custom__control:focus-within {
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+	}
+
+	.tip-custom__control input {
+		width: 56px;
+		border: 0;
+		background: transparent;
+		color: var(--ink);
+		font-size: 15px;
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.tip-custom__control input:focus {
+		outline: none;
+	}
+
+	.tip-custom__control input::-webkit-outer-spin-button,
+	.tip-custom__control input::-webkit-inner-spin-button {
+		appearance: none;
+		margin: 0;
+	}
+
+	.tip-custom__suffix {
+		color: var(--mute);
+		font-size: 14px;
+	}
+
+	.stepper {
+		display: inline-flex;
+		align-self: flex-start;
+		align-items: center;
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-sm);
+		background: var(--surface);
+		overflow: hidden;
+	}
+
+	.stepper button {
+		width: 44px;
+		height: 40px;
+		border: 0;
+		background: transparent;
+		color: var(--ink);
+		font-size: 18px;
+		line-height: 1;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+	}
+
+	.stepper button:hover {
+		background: var(--surface-2);
+	}
+
+	.stepper input {
+		width: 68px;
+		height: 40px;
+		padding: 0;
+		border: 0;
+		border-left: 1px solid var(--hairline);
+		border-right: 1px solid var(--hairline);
+		background: transparent;
+		color: var(--ink);
+		font-size: 15px;
+		font-weight: 600;
+		text-align: center;
+		font-variant-numeric: tabular-nums;
+		-moz-appearance: textfield;
+	}
+
+	.stepper input:focus {
+		outline: none;
+	}
+
+	.stepper input::-webkit-outer-spin-button,
+	.stepper input::-webkit-inner-spin-button {
+		appearance: none;
+		margin: 0;
+	}
+
+	.segmented {
+		display: inline-flex;
+		align-self: flex-start;
+		padding: 3px;
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-sm);
+		background: var(--surface-2);
+	}
+
+	.segmented__option {
+		position: relative;
+	}
+
+	.segmented__option input {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.segmented__option span {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		height: 32px;
+		padding: 0 14px;
+		border-radius: 4px;
+		color: var(--body);
+		font-size: 13px;
+		font-weight: 500;
+		cursor: pointer;
+		transition:
+			background-color 0.15s ease,
+			color 0.15s ease;
+	}
+
+	.segmented__option input:checked + span {
+		background: var(--surface);
+		color: var(--ink);
+		box-shadow: var(--shadow-1);
+	}
+
+	.segmented__option input:focus-visible + span {
+		outline: 2px solid var(--accent);
+		outline-offset: 1px;
+	}
+
+	.calc__result {
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-md);
+		padding: var(--s-xl);
+		background: var(--result-bg);
+		color: var(--result-fg);
+	}
+
+	.result__head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--s-sm);
+	}
+
+	.result__caption {
+		margin: 0;
+		color: var(--result-muted);
+		font-size: 13px;
+		font-weight: 500;
+		letter-spacing: 0.01em;
+	}
+
+	.result__amount {
+		margin: 0;
+		color: var(--result-fg);
+		font-size: clamp(34px, 5vw, 46px);
+		font-weight: 600;
+		line-height: 1.05;
+		letter-spacing: -1.8px;
+		font-variant-numeric: tabular-nums;
+		word-break: break-word;
+	}
+
+	.result__copy {
+		flex: 0 0 auto;
+		height: 30px;
+		padding: 0 12px;
+		border: 1px solid var(--result-btn-line);
+		border-radius: var(--r-sm);
+		background: transparent;
+		color: var(--result-fg);
+		font-size: 13px;
+		font-weight: 500;
+		cursor: pointer;
+		transition:
+			background-color 0.15s ease,
+			border-color 0.15s ease,
+			color 0.15s ease;
+	}
+
+	.result__copy:hover {
+		background: rgba(0, 0, 0, 0.08);
+	}
+
+	.result__copy.is-copied {
+		background: var(--result-fg);
+		border-color: var(--result-fg);
+		color: var(--result-bg);
+	}
+
+	.result__rows {
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-xs);
+		margin: 0;
+		padding-top: var(--s-md);
+		border-top: 1px solid var(--result-line);
+	}
+
+	.result__row {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--s-md);
+	}
+
+	.result__row dt {
+		color: var(--ink);
+		font-size: 14px;
+	}
+
+	[data-theme='dark'] .result__row dt {
+		color: var(--result-muted);
+	}
+
+	.result__row dd {
+		margin: 0;
+		color: var(--result-fg);
+		font-size: 15px;
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.result__split {
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-xs);
+	}
+
+	.split__bar {
+		display: flex;
+		height: 10px;
+		border-radius: var(--r-full);
+		overflow: hidden;
+	}
+
+	.split__segment {
+		flex: 1 1 0;
+		min-width: 2px;
+		background: rgba(255, 255, 255, 0.08);
+		border-right: 1px solid var(--result-bg);
+	}
+
+	.split__segment:last-child {
+		border-right: 0;
+	}
+
+	.split__segment:nth-child(even) {
+		background: rgba(255, 255, 255, 0.22);
+	}
+
+	.split__legend {
+		margin: 0;
+		color: var(--result-muted);
+		font-size: 12px;
+	}
+
+	.result__formula {
+		margin: 0;
+		padding-top: var(--s-md);
+		border-top: 1px solid var(--result-line);
+		color: var(--result-faint);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		line-height: 18px;
+		overflow-wrap: anywhere;
+	}
+
+	.result__note {
+		margin: 0;
+		color: var(--result-muted);
+		font-size: 12px;
+	}
+
+	.result__actions {
+		display: flex;
+		gap: var(--s-xs);
+		margin-top: auto;
+		padding-top: var(--s-sm);
+	}
+
+	.result__action {
+		flex: 1 1 0;
+		height: 36px;
+		border: 1px solid var(--result-btn-line);
+		border-radius: var(--r-sm);
+		background: transparent;
+		color: var(--result-fg);
+		font-size: 13px;
+		font-weight: 500;
+		cursor: pointer;
+		transition:
+			background-color 0.15s ease,
+			border-color 0.15s ease,
+			color 0.15s ease;
+	}
+
+	.result__action:hover {
+		background: rgba(0, 0, 0, 0.08);
+	}
+
+	.result__action.is-copied {
+		background: var(--result-fg);
+		border-color: var(--result-fg);
+		color: var(--result-bg);
+	}
+
+	@media (max-width: 880px) {
+		.calc__grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.calc__panel,
+		.calc__result {
+			padding: var(--s-lg);
+		}
+	}
+
+	@media (min-width: 620px) {
+		.presets {
+			grid-template-columns: repeat(8, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 480px) {
+		.segmented {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			width: 100%;
+		}
+
+		.segmented__option span {
+			width: 100%;
+			padding: 0 8px;
+		}
+
+		.result__amount {
+			font-size: clamp(32px, 9vw, 40px);
+		}
+	}
+</style>

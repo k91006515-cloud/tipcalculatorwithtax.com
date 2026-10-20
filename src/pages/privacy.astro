@@ -1,0 +1,72 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+	title="Privacy Policy — Tip Calculator With Tax"
+	description="How Tip Calculator With Tax handles your data: everything runs in your browser, and nothing about your bill is sent to us."
+	path="/privacy/"
+>
+	<Header />
+	<main id="main" class="page">
+		<div class="container page__inner">
+			<p class="eyebrow">Legal</p>
+			<h1 class="page__title">Privacy policy</h1>
+			<p class="page__meta">Last updated: 20 October 2026</p>
+
+			<div class="prose">
+				<h2>Short version</h2>
+				<p>
+					Tip Calculator With Tax does not ask for your name, your email, or your bill. Every
+					calculation happens inside your own browser, and the numbers you type are never sent
+					to our servers.
+				</p>
+
+				<h2>What we collect</h2>
+				<p>
+					We do not collect personal information. We do not operate accounts, and we do not ask
+					you to create one. The calculator stores a small amount of preference data in your
+					browser's local storage:
+				</p>
+				<ul>
+					<li>Your chosen currency</li>
+					<li>Your rounding preference</li>
+					<li>Your light or dark theme choice</li>
+				</ul>
+				<p>
+					These settings never leave your device, and clearing your browser storage removes them
+					for good.
+				</p>
+
+				<h2>Your bill amounts</h2>
+				<p>
+					The bill amount, tip percentage and number of people you enter are held in memory in
+					the browser tab only. They are not transmitted, not logged, and not stored on any
+					server. Refreshing or closing the page clears them.
+				</p>
+
+				<h2>Analytics and advertising</h2>
+				<p>
+					The site is designed to be fast and unobtrusive. We use privacy-respecting, cookie-free
+					measurement to understand which pages are useful. No advertising trackers or
+					third-party advertising cookies are set.
+				</p>
+
+				<h2>Links to other sites</h2>
+				<p>
+					Where we link to another website, that site has its own privacy policy. We are not
+					responsible for how third-party sites handle your information.
+				</p>
+
+				<h2>Contact</h2>
+				<p>
+					Questions about this policy can be sent to
+					<a href="mailto:hello@tipcalculatorwithtax.com">hello@tipcalculatorwithtax.com</a>.
+				</p>
+			</div>
+		</div>
+	</main>
+	<Footer />
+</Layout>
