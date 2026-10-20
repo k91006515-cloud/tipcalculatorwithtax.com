@@ -25,10 +25,23 @@ import ThemeToggle from './ThemeToggle.astro';
 		</nav>
 
 		<div class="nav__actions">
-			<div class="nav__currency-slot">
-				<CurrencySelect id="nav-currency" compact />
-			</div>
 			<ThemeToggle />
+			<div class="nav__language-select">
+				<select id="nav-language" aria-label="Language">
+					<option value="en">English</option>
+					<option value="es">Español</option>
+					<option value="fr">Français</option>
+					<option value="de">Deutsch</option>
+					<option value="zh">中文</option>
+					<option value="ja">日本語</option>
+					<option value="ar">العربية</option>
+					<option value="pt">Português</option>
+					<option value="ru">Русский</option>
+					<option value="it">Italiano</option>
+					<option value="ko">한국어</option>
+					<option value="hi">हिंदी</option>
+				</select>
+			</div>
 			<button
 				class="nav__menu-button"
 				type="button"
@@ -197,6 +210,28 @@ import ThemeToggle from './ThemeToggle.astro';
 		text-transform: uppercase;
 	}
 
+	.nav__language-select {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-xxs);
+		min-width: 0;
+	}
+
+	.nav__language-select select {
+		appearance: none;
+		-webkit-appearance: none;
+		width: 100%;
+		padding: 0 30px 0 12px;
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-sm);
+		background: var(--surface);
+		color: var(--ink);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		font-weight: 500;
+		cursor: pointer;
+	}
+
 	@media (max-width: 900px) {
 		.nav__links {
 			display: none;
@@ -213,11 +248,26 @@ import ThemeToggle from './ThemeToggle.astro';
 		.nav__mobile:not([hidden]) {
 			display: flex;
 		}
+
+		.nav__mobile a {
+			padding: 12px 0;
+			color: var(--body);
+			font-size: 15px;
+			border-bottom: 1px solid var(--hairline-soft);
+		}
+
+		.nav__mobile-currency {
+			padding-top: var(--s-md);
+		}
 	}
 
 	@media (max-width: 520px) {
 		.nav__wordmark {
 			font-size: 14px;
+		}
+
+		.nav__mobile-label {
+			display: none;
 		}
 	}
 </style>

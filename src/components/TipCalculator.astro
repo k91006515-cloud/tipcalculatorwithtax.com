@@ -140,16 +140,16 @@ const quickAmounts = [20, 50, 100, 200];
 				<label class="field__label" for="people-count">Number of people</label>
 				<div class="stepper">
 					<button type="button" data-action="people-dec" aria-label="One person fewer">−</button>
-					<input
-						id="people-count"
-						type="number"
-						inputmode="numeric"
-						min="1"
-						max="999"
-						step="1"
-						value="1"
-						data-field="people"
-					/>
+<input
+		id="people-count"
+		type="number"
+		inputmode="numeric"
+		min="0"
+		max="999"
+		step="1"
+		value="1"
+		data-field="people"
+/>
 					<button type="button" data-action="people-inc" aria-label="One person more">+</button>
 				</div>
 			</div>

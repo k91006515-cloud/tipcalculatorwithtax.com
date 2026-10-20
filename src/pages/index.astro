@@ -40,11 +40,6 @@ const features = [
 		icon: 'users',
 	},
 	{
-		title: 'Smart rounding',
-		text: 'Round the final per-person amount up, down or to the nearest unit so everyone pays a tidy figure.',
-		icon: 'ruler',
-	},
-	{
 		title: 'Light & dark',
 		text: 'A dark mode that follows your system preference, with a one-click toggle when you want to switch.',
 		icon: 'moon',
@@ -101,7 +96,7 @@ const faqItems = [
 			'No. Your bill amount never leaves the device. We only remember your currency choice, rounding preference and theme locally in your browser so they are still there next time.',
 	},
 	{
-		question: 'how much to tip waitress calculator',
+		question: 'How much to tip waitress calculator',
 		answer:
 			'Use the tip calculator to enter your bill amount and select a percentage — 15–20% is standard for waitress service in the US. The calculator will show the tip amount and total per person.',
 	},
@@ -171,17 +166,17 @@ const faqItems = [
 			'Round to the nearest whole dollar or desired unit. Some people round up for simplicity (e.g., $9.40 tip → $10). Others round down or keep the exact calculated amount.',
 	},
 	{
-		question: 'Free tip calculator app for Android',
+		question: 'Is there a free tip calculator app for Android',
 		answer:
 			'Yes, there are many free tip calculator apps available on the Google Play Store. Search "tip calculator" for options with bill splitting, tax support, and rounding features.',
 	},
 	{
-		question: 'Simple tip calculator free online',
+		question: 'Is there a simple tip calculator free online',
 		answer:
 			'Yes, this website is a free online tip calculator — no download needed. Enter your bill, choose a percentage, and get instant results including tip amount, total, and per-person split.',
 	},
 	{
-		question: 'Tip calculator Google',
+		question: 'Does Google have a tip calculator',
 		answer:
 			'Google has a built-in tip calculator — search "tip calculator" or "calculate tip" in Google, enter your bill amount and tip percentage, and Google will compute the result instantly.',
 	},
@@ -233,33 +228,26 @@ const jsonLd = [
 	<Header />
 
 	<main id="main">
-		<section class="hero">
-			<div class="hero__glow" aria-hidden="true"></div>
-			<div class="container hero__inner">
-				<p class="eyebrow">Tip Calculator With Tax</p>
-				<h1 class="hero__title">
-					Calculate tip, split bill, settle up
-				</h1>
+		<section class="hero" style="background: var(--canvas);">
+			<div class="container hero__inner" style="padding: clamp(40px, 8vw, 60px) clamp(60px, 10vw, 80px); border-radius: var(--r-lg);">
+				<h1 class="hero__title">Tip Calculator <span class="hero__gold">With Tax</span></h1>
 				<p class="hero__lead">
-					Enter your bill, choose a tip percentage, and split among any number of people.
+					Calculate tips, split bills, and include tax — easily and accurately.
 				</p>
-				<div class="hero__cta">
-					<a class="btn btn-primary btn-pill" href="#calculator">Calculate Your Tip</a>
-				</div>
-				<div class="hero__points">
-					<span>No sign-up</span>
-					<span>40+ currencies</span>
-					<span>Works on every device</span>
-				</div>
-				<div class="hero__links">
-					<a href="/about/">About us</a>
-					<a href="/contact/">Contact us</a>
-				</div>
 			</div>
 		</section>
 
-		<div class="container calculator-wrap">
+		<div class="container calculator-wrap" style="margin-top: clamp(30px, 8vw, 60px)">
 			<TipCalculator />
+
+			<div class="links-below">
+				<div class="links-below__row">
+					<a class="link-below" href="/about/">About us</a>
+					<a class="link-below" href="/contact/">Contact us</a>
+					<a class="link-below" href="#how-it-works">How it works</a>
+					<a class="link-below" href="#faq">FAQ</a>
+				</div>
+			</div>
 		</div>
 
 		<section class="section" id="how-it-works">
