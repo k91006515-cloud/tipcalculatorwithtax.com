@@ -20,36 +20,172 @@ const {
 
 <label class={`currency ${className}`} for={id}>
 	<span class="sr-only">{label}</span>
-	<select id={id} name={name} data-stc-currency aria-label={label}>
+
+	<div class="currency__select-wrapper" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label={label} tabindex="0">
+		<span class="currency__selected"></span>
+		<svg
+			class="currency__chevron"
+			aria-hidden="true"
+			width="12"
+			height="12"
+			viewBox="0 0 12 12"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path
+				d="M3 4.5 6 7.5 9 4.5"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"></path>
+		</svg>
+	</div>
+
+	<ul
+		class="currency__dropdown"
+		role="listbox"
+		aria-label={label}
+		style="display: none;"
+	>
 		{
 			CURRENCY_REGIONS.map((region) => (
-				<optgroup label={region}>
-					{CURRENCIES.filter((currency) => currency.region === region).map((currency) => (
-						<option value={currency.code}>
-							{compact ? `${currency.symbol} ${currency.code}` : `${currency.symbol} ${currency.code} — ${currency.name}`}
-						</option>
-					))}
-				</optgroup>
+				<li class="currency__optgroup" style="display: none;">
+					<span>{region}</span>
+				</li>
 			))
 		}
-	</select>
-	<svg
-		class="currency__chevron"
-		aria-hidden="true"
-		width="12"
-		height="12"
-		viewBox="0 0 12 12"
-		fill="none"
-		xmlns="http://www.w3.org/2000/svg"
-	>
-		<path
-			d="M3 4.5 6 7.5 9 4.5"
-			stroke="currentColor"
-			stroke-width="1.5"
-			stroke-linecap="round"
-			stroke-linejoin="round"></path>
-	</svg>
+		{
+			CURRENCIES.map((currency) => (
+				<li class="currency__option" data-code={currency.code} role="option">
+					<span class="currency__symbol">{currency.symbol}</span>
+					<span class="currency__code">{currency.code}</span>
+					<span class="currency__name">${currency.name}</span>
+				</li>
+			))
+		}
+	</ul>
 </label>
+
+<script>
+	const wrapper = document.querySelector(`.currency__select-wrapper[aria-label="${label}"]`);
+	const selectedSpan = wrapper.querySelector('.currency__selected');
+	const dropdown = wrapper.nextElementSibling;
+	let isOpen = false;
+
+	if (wrapper && selectedSpan && dropdown) {
+		const options = dropdown.querySelectorAll('.currency__option');
+
+		const updateSelected = (currencyCode) => {
+			const currency = CURRENCIES.find((c) => c.code === currencyCode);
+			if (currency) {
+				selectedSpan.innerHTML = `${currency.symbol} ${currency.code} — ${currency.name}`;
+			} else {
+				selectedSpan.textContent = currencyCode;
+			}
+		};
+
+		const openDropdown = () => {
+			isOpen = true;
+			wrapper.setAttribute('aria-expanded', 'true');
+			dropdown.style.display = 'block';
+			wrapper.setAttribute('aria-label', `${label} dropdown`);
+
+			options.forEach((option) => {
+				option.style.display = 'block';
+				option.addEventListener('click', () => {
+					const code = option.dataset.code;
+					updateSelected(code);
+					selectOption(code);
+					closeDropdown();
+				});
+			});
+
+			// Position dropdown below the wrapper
+			const rect = wrapper.getBoundingClientRect();
+			const dropdownRect = dropdown.getBoundingClientRect();
+			const maxHeight = window.innerHeight - rect.bottom - 8;
+			const maxWidth = window.innerWidth - rect.right - 8;
+			dropdown.style.maxHeight = `${Math.max(200, maxHeight)}px`;
+			dropdown.style.width = `${rect.width}px`;
+		};
+
+		const closeDropdown = () => {
+			isOpen = false;
+			wrapper.setAttribute('aria-expanded', 'false');
+			dropdown.style.display = 'none';
+			selectedSpan.blur();
+		};
+
+		const selectOption = (code) => {
+			const currency = CURRENCIES.find((c) => c.code === code);
+			if (currency) {
+				selectedSpan.innerHTML = `${currency.symbol} ${currency.code} — ${currency.name}`;
+			}
+			wrapper.dispatchEvent(new Event('change', { bubbles: true }));
+		};
+
+		wrapper.addEventListener('click', (e) => {
+			e.stopPropagation();
+			if (isOpen) {
+				closeDropdown();
+			} else {
+				openDropdown();
+			}
+		});
+
+		document.addEventListener('click', (e) => {
+			if (!wrapper.contains(e.target)) {
+				closeDropdown();
+			}
+		});
+
+		wrapper.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				if (isOpen) {
+					const visibleOptions = Array.from(options).filter((o) => o.style.display !== 'none');
+					if (visibleOptions.length > 0) {
+						const firstOption = visibleOptions[0];
+						const code = firstOption.dataset.code;
+						selectOption(code);
+						closeDropdown();
+					}
+				} else {
+					openDropdown();
+				}
+			}
+			if (e.key === 'ArrowDown') {
+				e.preventDefault();
+				if (!isOpen) {
+					openDropdown();
+				} else {
+					const visibleOptions = Array.from(options).filter((o) => o.style.display !== 'none');
+					if (visibleOptions.length > 0) {
+						const firstVisible = visibleOptions[0];
+						firstOption.focus();
+						// Add hover class to first option
+						visibleOptions.forEach((opt) => opt.classList.remove('currency__option--hover'));
+						firstVisible.classList.add('currency__option--hover');
+					}
+				}
+			}
+			if (e.key === 'ArrowUp') {
+				e.preventDefault();
+				if (isOpen) {
+					const visibleOptions = Array.from(options).filter((o) => o.style.display !== 'none');
+					if (visibleOptions.length > 0) {
+						const lastVisible = visibleOptions[visibleOptions.length - 1];
+						visibleOptions.forEach((opt) => opt.classList.remove('currency__option--hover'));
+						lastVisible.classList.add('currency__option--hover');
+					}
+				}
+			}
+			if (e.key === 'Escape') {
+				closeDropdown();
+			}
+		});
+	}
+</script>
 
 <style>
 	.currency {
@@ -59,12 +195,10 @@ const {
 		min-width: 0;
 	}
 
-	.currency select {
-		appearance: none;
-		-webkit-appearance: none;
-		width: 100%;
+	.currency__select-wrapper {
+		display: inline-flex;
+		align-items: center;
 		height: 36px;
-		max-width: 190px;
 		padding: 0 30px 0 12px;
 		border: 1px solid var(--hairline);
 		border-radius: var(--r-sm);
@@ -75,20 +209,120 @@ const {
 		font-weight: 500;
 		letter-spacing: 0.02em;
 		cursor: pointer;
-		text-overflow: ellipsis;
+		gap: 8px;
 		transition:
 			border-color 0.15s ease,
 			background-color 0.15s ease;
+		user-select: none;
 	}
 
-	.currency select:hover {
+	.currency__select-wrapper:hover {
 		border-color: var(--hairline-strong);
 	}
 
+	.currency__select-wrapper:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+		border-radius: var(--r-sm);
+	}
+
+	.currency__select-wrapper[cursor='not-allowed'] {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
 	.currency__chevron {
-		position: absolute;
-		right: 11px;
-		pointer-events: none;
+		flex-shrink: 0;
+		width: 12px;
+		height: 12px;
 		color: var(--mute);
+		transition: color 0.15s ease;
+	}
+
+	:global([data-theme='dark']) .currency__chevron {
+		color: var(--body);
+	}
+
+	.currency__selected {
+		flex: 1;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.currency__dropdown {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		min-width: 100%;
+		margin-top: 4px;
+		background: var(--surface);
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-sm);
+		padding: 8px 0;
+		z-index: 100;
+		box-shadow: var(--shadow-3);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	:global([data-theme='dark']) .currency__dropdown {
+		background: var(--surface);
+		border-color: var(--hairline);
+		box-shadow: var(--shadow-3);
+	}
+
+	.currency__optgroup {
+		font-size: 10px;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--mute);
+		padding: 4px 12px;
+		font-family: var(--font-mono);
+	}
+
+	.currency__option {
+		display: flex;
+		align-items: center;
+		min-height: 28px;
+		padding: 4px 12px;
+		font-size: 12px;
+		font-family: var(--font-mono);
+		font-weight: 500;
+		cursor: pointer;
+		transition: background-color 0.15s ease, color 0.15s ease;
+	}
+
+	.currency__option:hover,
+	.currency__option.currency__option--hover {
+		background: var(--surface-2);
+		color: var(--ink);
+	}
+
+	.currency__option--selected {
+		background: color-mix(in srgb, var(--accent) 20%, var(--surface));
+		color: var(--accent);
+	}
+
+	.currency__symbol {
+		color: var(--mute);
+		margin-right: 4px;
+		font-size: 14px;
+		flex-shrink: 0;
+	}
+
+	.currency__code {
+		margin-right: 4px;
+		color: var(--ink);
+		font-weight: normal;
+	}
+
+	.currency__name {
+		color: var(--ink);
+		flex: 1;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 </style>

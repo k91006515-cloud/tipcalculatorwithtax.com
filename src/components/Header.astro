@@ -26,22 +26,6 @@ import ThemeToggle from './ThemeToggle.astro';
 
 		<div class="nav__actions">
 			<ThemeToggle />
-			<div class="nav__language-select">
-				<select id="nav-language" aria-label="Language">
-					<option value="en">English</option>
-					<option value="es">Español</option>
-					<option value="fr">Français</option>
-					<option value="de">Deutsch</option>
-					<option value="zh">中文</option>
-					<option value="ja">日本語</option>
-					<option value="ar">العربية</option>
-					<option value="pt">Português</option>
-					<option value="ru">Русский</option>
-					<option value="it">Italiano</option>
-					<option value="ko">한국어</option>
-					<option value="hi">हिंदी</option>
-				</select>
-			</div>
 			<button
 				class="nav__menu-button"
 				type="button"
@@ -65,6 +49,9 @@ import ThemeToggle from './ThemeToggle.astro';
 						stroke-linecap="round"></path>
 				</svg>
 			</button>
+			<div class="nav__currency-slot">
+				<CurrencySelect id="nav-currency" compact />
+			</div>
 		</div>
 	</div>
 
@@ -208,28 +195,6 @@ import ThemeToggle from './ThemeToggle.astro';
 		font-size: 12px;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-	}
-
-	.nav__language-select {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--s-xxs);
-		min-width: 0;
-	}
-
-	.nav__language-select select {
-		appearance: none;
-		-webkit-appearance: none;
-		width: 100%;
-		padding: 0 30px 0 12px;
-		border: 1px solid var(--hairline);
-		border-radius: var(--r-sm);
-		background: var(--surface);
-		color: var(--ink);
-		font-family: var(--font-mono);
-		font-size: 12px;
-		font-weight: 500;
-		cursor: pointer;
 	}
 
 	@media (max-width: 900px) {

@@ -1,4 +1,5 @@
 ---
+import CurrencySelect from './CurrencySelect.astro';
 import { CURRENCIES, CURRENCY_REGIONS } from '../data/currencies';
 
 const tipPresets = [0, 10, 15, 18, 20, 25, 30, 50];
@@ -27,22 +28,7 @@ const quickAmounts = [20, 50, 100, 200];
 				<label class="field__label" for="bill-amount">Bill amount</label>
 				<div class="amount">
 					<label class="amount__currency">
-						<span class="sr-only">Currency</span>
-						<select data-stc-currency aria-label="Currency">
-							{
-								CURRENCY_REGIONS.map((region) => (
-									<optgroup label={region}>
-										{CURRENCIES.filter((currency) => currency.region === region).map(
-											(currency) => (
-												<option value={currency.code}>
-													{currency.symbol} {currency.code}
-												</option>
-											),
-										)}
-									</optgroup>
-								))
-							}
-						</select>
+						<CurrencySelect id="currency" compact />
 						<svg
 							aria-hidden="true"
 							width="12"
