@@ -324,7 +324,7 @@ function initCurrencySelects() {
 	}
 	syncCurrencySelects(state.currency);
 
-	document.querySelectorAll<HTMLSelectElement>('[data-stc-currency]').forEach((select) => {
+	document.querySelectorAll<HTMLElement>('[data-stc-currency]').forEach((select) => {
 		select.addEventListener('change', () => {
 			const code = select.value;
 			if (!CURRENCIES.some((currency) => currency.code === code)) return;
