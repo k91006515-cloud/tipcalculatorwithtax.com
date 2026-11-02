@@ -3,10 +3,24 @@ export interface Currency {
 	name: string;
 	symbol: string;
 	locale: string;
-	region: string;
+	region: 'Americas' | 'Europe' | 'Middle East & Africa' | 'Asia Pacific';
 }
 
+export const POPULAR_CURRENCY_CODES = [
+	'USD',
+	'EUR',
+	'GBP',
+	'INR',
+	'CAD',
+	'AUD',
+	'JPY',
+	'MXN',
+	'BRL',
+	'SGD',
+];
+
 export const CURRENCIES: Currency[] = [
+	// Americas
 	{ code: 'USD', name: 'US Dollar', symbol: '$', locale: 'en-US', region: 'Americas' },
 	{ code: 'CAD', name: 'Canadian Dollar', symbol: '$', locale: 'en-CA', region: 'Americas' },
 	{ code: 'MXN', name: 'Mexican Peso', symbol: '$', locale: 'es-MX', region: 'Americas' },
@@ -14,7 +28,9 @@ export const CURRENCIES: Currency[] = [
 	{ code: 'ARS', name: 'Argentine Peso', symbol: '$', locale: 'es-AR', region: 'Americas' },
 	{ code: 'CLP', name: 'Chilean Peso', symbol: '$', locale: 'es-CL', region: 'Americas' },
 	{ code: 'COP', name: 'Colombian Peso', symbol: '$', locale: 'es-CO', region: 'Americas' },
-	{ code: 'END', name: 'Peruvian Sol', symbol: 'S/', locale: 'es-PE', region: 'Americas' },
+	{ code: 'PEN', name: 'Peruvian Sol', symbol: 'S/', locale: 'es-PE', region: 'Americas' },
+
+	// Europe
 	{ code: 'EUR', name: 'Euro', symbol: '€', locale: 'de-DE', region: 'Europe' },
 	{ code: 'GBP', name: 'British Pound', symbol: '£', locale: 'en-GB', region: 'Europe' },
 	{ code: 'CHF', name: 'Swiss Franc', symbol: 'CHF', locale: 'de-CH', region: 'Europe' },
@@ -26,6 +42,10 @@ export const CURRENCIES: Currency[] = [
 	{ code: 'HUF', name: 'Hungarian Forint', symbol: 'Ft', locale: 'hu-HU', region: 'Europe' },
 	{ code: 'RON', name: 'Romanian Leu', symbol: 'lei', locale: 'ro-RO', region: 'Europe' },
 	{ code: 'UAH', name: 'Ukrainian Hryvnia', symbol: '₴', locale: 'uk-UA', region: 'Europe' },
+	{ code: 'ISK', name: 'Icelandic Krona', symbol: 'kr', locale: 'is-IS', region: 'Europe' },
+	{ code: 'BGN', name: 'Bulgarian Lev', symbol: 'лв', locale: 'bg-BG', region: 'Europe' },
+
+	// Middle East & Africa
 	{ code: 'AED', name: 'UAE Dirham', symbol: 'د.إ', locale: 'ar-AE', region: 'Middle East & Africa' },
 	{ code: 'SAR', name: 'Saudi Riyal', symbol: '﷼', locale: 'ar-SA', region: 'Middle East & Africa' },
 	{ code: 'QAR', name: 'Qatari Riyal', symbol: 'ر.ق', locale: 'ar-QA', region: 'Middle East & Africa' },
@@ -36,6 +56,8 @@ export const CURRENCIES: Currency[] = [
 	{ code: 'EGP', name: 'Egyptian Pound', symbol: 'E£', locale: 'en-EG', region: 'Middle East & Africa' },
 	{ code: 'KES', name: 'Kenyan Shilling', symbol: 'KSh', locale: 'en-KE', region: 'Middle East & Africa' },
 	{ code: 'MAD', name: 'Moroccan Dirham', symbol: 'د.م.', locale: 'fr-MA', region: 'Middle East & Africa' },
+
+	// Asia Pacific
 	{ code: 'JPY', name: 'Japanese Yen', symbol: '¥', locale: 'ja-JP', region: 'Asia Pacific' },
 	{ code: 'CNY', name: 'Chinese Yuan', symbol: '¥', locale: 'zh-CN', region: 'Asia Pacific' },
 	{ code: 'HKD', name: 'Hong Kong Dollar', symbol: '$', locale: 'en-HK', region: 'Asia Pacific' },
@@ -54,11 +76,14 @@ export const CURRENCIES: Currency[] = [
 	{ code: 'AUD', name: 'Australian Dollar', symbol: '$', locale: 'en-AU', region: 'Asia Pacific' },
 	{ code: 'NZD', name: 'New Zealand Dollar', symbol: '$', locale: 'en-NZ', region: 'Asia Pacific' },
 	{ code: 'FJD', name: 'Fijian Dollar', symbol: '$', locale: 'en-FJ', region: 'Asia Pacific' },
-	{ code: 'ISK', name: 'Icelandic Krona', symbol: 'kr', locale: 'is-IS', region: 'Europe' },
-	{ code: 'BGN', name: 'Bulgarian Lev', symbol: 'лв', locale: 'bg-BG', region: 'Europe' },
 ];
 
-export const CURRENCY_REGIONS = Array.from(new Set(CURRENCIES.map((c) => c.region)));
+export const CURRENCY_REGIONS: Currency['region'][] = [
+	'Americas',
+	'Europe',
+	'Middle East & Africa',
+	'Asia Pacific',
+];
 
 export const DEFAULT_CURRENCY = 'USD';
 
@@ -68,10 +93,12 @@ export function getCurrency(code: string): Currency {
 
 export function currencyDecimals(code: string): number {
 	try {
-		return new Intl.NumberFormat(getCurrency(code).locale, {
-			style: 'currency',
-			currency: code,
-		}).resolvedOptions().maximumFractionDigits ?? 2;
+		return (
+			new Intl.NumberFormat(getCurrency(code).locale, {
+				style: 'currency',
+				currency: code,
+			}).resolvedOptions().maximumFractionDigits ?? 2
+		);
 	} catch {
 		return 2;
 	}

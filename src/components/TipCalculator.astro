@@ -1,33 +1,81 @@
 ---
-
-import { CURRENCIES, CURRENCY_REGIONS } from '../data/currencies';
+import { CURRENCIES, POPULAR_CURRENCY_CODES, CURRENCY_REGIONS } from '../data/currencies';
 
 const tipPresets = [0, 10, 15, 18, 20, 25, 30, 50];
 const roundingOptions = [
-	{ value: 'off', label: 'Off' },
-	{ value: 'up', label: 'Up' },
-	{ value: 'down', label: 'Down' },
-	{ value: 'nearest', label: 'Nearest' },
+	{ value: 'off', labelKey: 'roundOff', labelFallback: 'Off' },
+	{ value: 'up', labelKey: 'roundUp', labelFallback: 'Up' },
+	{ value: 'down', labelKey: 'roundDown', labelFallback: 'Down' },
+	{ value: 'nearest', labelKey: 'roundNearest', labelFallback: 'Nearest' },
 ];
 const quickAmounts = [20, 50, 100, 200];
+const popularCurrencies = CURRENCIES.filter((c) => POPULAR_CURRENCY_CODES.includes(c.code));
 ---
 
 <section class="calc" id="calculator" data-stc-calculator aria-labelledby="calc-heading">
-	<h2 class="sr-only" id="calc-heading">Tip calculator</h2>
+	<h2 class="sr-only" id="calc-heading" data-i18n="calcHeading">Tip Calculator</h2>
 
 	<noscript>
 		<p class="calc__noscript">
-			The calculator needs JavaScript to run. You can still work it out by hand: tip = bill ×
-			percentage, then divide (bill + tip) by the number of people.
+			This calculator runs client-side with JavaScript. Tip = bill × percentage, total = bill + tax + tip, split per person = total ÷ people.
 		</p>
 	</noscript>
 
 	<div class="calc__grid">
+		<!-- Left Input Panel -->
 		<div class="calc__panel">
+			<!-- Bill Amount Field -->
 			<div class="field">
-				<label class="field__label" for="bill-amount">Bill amount</label>
+				<div class="field__header">
+					<label class="field__label" for="bill-amount" data-i18n="billAmount">Bill amount</label>
+					<span class="field__hint" data-i18n="quickAmounts">Quick amounts:</span>
+				</div>
 				<div class="amount">
-					<label class="amount__currency">$</label>
+					<div class="amount__currency" title="Click to change currency">
+						<span class="amount__currency-symbol" data-out="currency-symbol">$</span>
+						<select
+							class="amount__currency-select"
+							data-stc-currency
+							aria-label="Select currency"
+						>
+							<optgroup label="Popular">
+								{
+									popularCurrencies.map((c) => (
+										<option value={c.code}>
+											{c.code} ({c.symbol})
+										</option>
+									))
+								}
+							</optgroup>
+							{
+								CURRENCY_REGIONS.map((region) => (
+									<optgroup label={region}>
+										{CURRENCIES.filter((c) => c.region === region).map((c) => (
+											<option value={c.code}>
+												{c.code} – {c.name} ({c.symbol})
+											</option>
+										))}
+									</optgroup>
+								))
+							}
+						</select>
+						<svg
+							class="amount__currency-chevron"
+							width="10"
+							height="10"
+							viewBox="0 0 12 12"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+							aria-hidden="true"
+						>
+							<path
+								d="M2.5 4.5 6 8l3.5-3.5"
+								stroke="currentColor"
+								stroke-width="1.3"
+								stroke-linecap="round"
+								stroke-linejoin="round"></path>
+						</svg>
+					</div>
 					<input
 						class="amount__input"
 						id="bill-amount"
@@ -37,61 +85,75 @@ const quickAmounts = [20, 50, 100, 200];
 						spellcheck="false"
 						placeholder="0.00"
 						data-field="bill"
+						aria-label="Bill amount"
 					/>
 				</div>
 				<div class="quick">
-					<span class="quick__label">Quick amounts</span>
 					{
 						quickAmounts.map((amount) => (
-							<button type="button" data-quick-amount={amount} title={`Set the bill to ${amount}`}>
-								{amount}
+							<button
+								type="button"
+								class="quick__btn"
+								data-quick-amount={amount}
+								title={`Set bill to ${amount}`}
+							>
+								${amount}
 							</button>
 						))
 					}
 				</div>
 			</div>
 
+			<!-- Tip Percentage Field -->
 			<div class="field">
-				<span class="field__label" id="tip-label">Tip percentage</span>
+				<div class="field__header">
+					<span class="field__label" id="tip-label" data-i18n="tipPercentage">Tip percentage</span>
+					<div class="tip-custom">
+						<label class="tip-custom__label" for="tip-percent" data-i18n="customTip">Custom:</label>
+						<div class="tip-custom__control">
+							<input
+								id="tip-percent"
+								type="number"
+								inputmode="decimal"
+								autocomplete="off"
+								min="0"
+								max="500"
+								step="1"
+								value="20"
+								data-field="tip"
+								aria-label="Custom tip percentage"
+							/>
+							<span class="tip-custom__suffix" aria-hidden="true">%</span>
+						</div>
+					</div>
+				</div>
 				<div class="presets" role="group" aria-labelledby="tip-label">
 					{
 						tipPresets.map((preset) => (
 							<button
 								type="button"
-								class="preset"
+								class={`preset ${preset === 20 ? 'is-active' : ''}`}
 								data-tip-preset={preset}
-								aria-pressed="false"
+								aria-pressed={preset === 20 ? 'true' : 'false'}
 							>
 								{preset}%
 							</button>
 						))
 					}
 				</div>
-				<div class="tip-custom">
-					<label class="tip-custom__label" for="tip-percent">Custom tip</label>
-					<div class="tip-custom__control">
-<input
-							id="tip-percent"
-							type="number"
-							inputmode="decimal"
-							autocomplete="off"
-							min="0"
-							max="500"
-							step="1"
-							value="20"
-							data-field="tip"
-/>
-						<span class="tip-custom__suffix" aria-hidden="true">%</span>
-					</div>
-				</div>
 			</div>
 
+			<!-- Sales Tax Field -->
 			<div class="field">
-				<span class="field__label" id="tax-label">Tax percentage</span>
-				<div class="tip-custom">
-					<label class="tip-custom__label" for="tax-percent">Custom tax</label>
-					<div class="tip-custom__control">
-<input
+				<div class="field__header">
+					<label class="field__label" for="tax-percent">
+						<span data-i18n="taxRate">Tax rate</span>
+						<span class="field__sublabel" data-i18n="taxHint">(Optional percentage)</span>
+					</label>
+				</div>
+				<div class="tax-row">
+					<div class="tip-custom__control tax-control">
+						<input
 							id="tax-percent"
 							type="number"
 							inputmode="decimal"
@@ -101,40 +163,73 @@ const quickAmounts = [20, 50, 100, 200];
 							step="0.01"
 							value="0"
 							data-field="tax"
-/>
+							aria-label="Sales tax percentage"
+						/>
 						<span class="tip-custom__suffix" aria-hidden="true">%</span>
+					</div>
+					<div class="tax-presets">
+						<button type="button" class="tax-preset-btn" data-tax-preset="0">0%</button>
+						<button type="button" class="tax-preset-btn" data-tax-preset="5">5%</button>
+						<button type="button" class="tax-preset-btn" data-tax-preset="8.25">8.25%</button>
+						<button type="button" class="tax-preset-btn" data-tax-preset="10">10%</button>
 					</div>
 				</div>
 			</div>
 
+			<!-- Number of People Field -->
 			<div class="field">
-				<label class="field__label" for="people-count">Number of people</label>
-				<div class="stepper">
-					<button type="button" data-action="people-dec" aria-label="One person fewer">−</button>
-<input
-		id="people-count"
-		type="number"
-		inputmode="numeric"
-		min="0"
-		max="999"
-		step="1"
-		value="1"
-		data-field="people"
-		aria-valuemin="0"
-		aria-valuemax="999"
-/>
-					<button type="button" data-action="people-inc" aria-label="One person more">+</button>
+				<label class="field__label" for="people-count" data-i18n="numberOfPeople">Number of people</label>
+				<div class="stepper-wrap">
+					<div class="stepper">
+						<button
+							type="button"
+							data-action="people-dec"
+							aria-label="One person fewer"
+							data-i18n-aria="peopleFewerAria"
+						>−</button>
+						<input
+							id="people-count"
+							type="number"
+							inputmode="numeric"
+							min="1"
+							max="999"
+							step="1"
+							value="1"
+							data-field="people"
+							aria-valuemin="1"
+							aria-valuemax="999"
+							aria-label="Number of people"
+						/>
+						<button
+							type="button"
+							data-action="people-inc"
+							aria-label="One person more"
+							data-i18n-aria="peopleMoreAria"
+						>+</button>
+					</div>
+					<div class="people-presets">
+						<button type="button" class="people-preset-btn" data-people-preset="1">1</button>
+						<button type="button" class="people-preset-btn" data-people-preset="2">2</button>
+						<button type="button" class="people-preset-btn" data-people-preset="4">4</button>
+						<button type="button" class="people-preset-btn" data-people-preset="6">6</button>
+					</div>
 				</div>
 			</div>
 
+			<!-- Rounding Options Field -->
 			<div class="field">
-				<span class="field__label" id="rounding-label">Round the per-person total</span>
+				<span class="field__label" id="rounding-label" data-i18n="roundingLabel">Round per-person total</span>
 				<div class="segmented" role="radiogroup" aria-labelledby="rounding-label">
 					{
 						roundingOptions.map((option) => (
 							<label class="segmented__option">
-								<input type="radio" name="stc-rounding" value={option.value} checked={option.value === 'off'} />
-								<span>{option.label}</span>
+								<input
+									type="radio"
+									name="stc-rounding"
+									value={option.value}
+									checked={option.value === 'off'}
+								/>
+								<span data-i18n={option.labelKey}>{option.labelFallback}</span>
 							</label>
 						))
 					}
@@ -142,53 +237,109 @@ const quickAmounts = [20, 50, 100, 200];
 			</div>
 		</div>
 
+		<!-- Right Result Panel -->
 		<div class="calc__result">
-			<div class="result__head">
-				<p class="result__caption" data-out="per-person-caption">Total to pay</p>
-				<button
-					class="result__copy"
-					type="button"
-					data-action="copy"
-					title="Copy the amount each person pays"
-				>
-					Copy
-				</button>
-			</div>
-
-			<p class="result__amount" data-out="per-person" role="status" aria-atomic="true">$0.00</p>
-
-			<dl class="result__rows">
-				<div class="result__row">
-					<dt>Tip</dt>
-					<dd data-out="tip">$0.00</dd>
+			<div class="result__card">
+				<div class="result__head">
+					<span class="result__badge" data-out="person-badge">
+						<svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+							<path d="M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM3 18c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+						</svg>
+						<span data-out="per-person-caption" data-i18n="totalToPay">Total to pay</span>
+					</span>
+					<button
+						class="result__copy"
+						type="button"
+						data-action="copy"
+						title="Copy per-person amount"
+						aria-label="Copy amount"
+					>
+						<svg class="result__copy-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+							<rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+							<path d="M3 11V3.5A1.5 1.5 0 0 1 4.5 2H11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+						</svg>
+						<span data-out="copy-label" data-i18n="copyResult">Copy</span>
+					</button>
 				</div>
-				<div class="result__row">
-					<dt>Tax</dt>
-					<dd data-out="tax">$0.00</dd>
-				</div>
-				<div class="result__row">
-					<dt>Total</dt>
-					<dd data-out="total">$0.00</dd>
-				</div>
-				<div class="result__row">
-					<dt>Tip per person</dt>
-					<dd data-out="tip-per-person">$0.00</dd>
-				</div>
-			</dl>
 
-			<div class="result__split" data-out="split" hidden>
-				<div class="split__bar" data-out="split-bar" aria-hidden="true"></div>
-				<p class="split__legend" data-out="split-legend"></p>
-			</div>
+				<div class="result__amount-wrap">
+					<p class="result__amount" data-out="per-person" role="status" aria-live="polite">$0.00</p>
+				</div>
 
-			<p class="result__formula" data-out="formula"></p>
-			<p class="result__note" data-out="rounding-note" hidden></p>
+				<!-- Visual Split Segments -->
+				<div class="result__split" data-out="split" hidden>
+					<div class="split__bar" data-out="split-bar" aria-hidden="true"></div>
+					<p class="split__legend" data-out="split-legend"></p>
+				</div>
 
-			<div class="result__actions">
-				<button class="result__action" type="button" data-action="copy-link" title="Copy a link that opens this split">
-					Copy link
-				</button>
-				<button class="result__action" type="button" data-action="reset">Reset</button>
+				<!-- Breakdown List -->
+				<dl class="result__rows">
+					<div class="result__row">
+						<dt>
+							<span class="result__row-dot result__row-dot--bill"></span>
+							<span data-i18n="billAmount">Bill amount</span>
+						</dt>
+						<dd data-out="bill-display">$0.00</dd>
+					</div>
+					<div class="result__row">
+						<dt>
+							<span class="result__row-dot result__row-dot--tax"></span>
+							<span data-i18n="taxLabel">Tax</span>
+							<span class="result__row-pct" data-out="tax-pct">(0%)</span>
+						</dt>
+						<dd data-out="tax">$0.00</dd>
+					</div>
+					<div class="result__row">
+						<dt>
+							<span class="result__row-dot result__row-dot--tip"></span>
+							<span data-i18n="tipLabel">Tip</span>
+							<span class="result__row-pct" data-out="tip-pct">(20%)</span>
+						</dt>
+						<dd data-out="tip">$0.00</dd>
+					</div>
+					<div class="result__row result__row--highlight">
+						<dt>
+							<span class="result__row-dot result__row-dot--total"></span>
+							<strong data-i18n="totalLabel">Total</strong>
+						</dt>
+						<dd><strong data-out="total">$0.00</strong></dd>
+					</div>
+					<div class="result__row result__row--sub" data-out="tip-per-person-row" hidden>
+						<dt data-i18n="tipPerPersonLabel">Tip per person</dt>
+						<dd data-out="tip-per-person">$0.00</dd>
+					</div>
+				</dl>
+
+				<!-- Formula and Rounding Notes -->
+				<p class="result__formula" data-out="formula"></p>
+				<p class="result__note" data-out="rounding-note" hidden></p>
+
+				<!-- Action Buttons -->
+				<div class="result__actions">
+					<button
+						class="result__action result__action--share"
+						type="button"
+						data-action="copy-link"
+						title="Share this calculation as a direct link"
+					>
+						<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+							<path d="M6.5 9.5 9.5 6.5M6 6.5l-1.5 1.5a2.12 2.12 0 1 0 3 3L9 9.5M10 9.5l1.5-1.5a2.12 2.12 0 0 0-3-3L7 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+						</svg>
+						<span data-i18n="copyLink">Copy link</span>
+					</button>
+
+					<button
+						class="result__action result__action--reset"
+						type="button"
+						data-action="reset"
+						title="Reset calculator to defaults"
+					>
+						<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+							<path d="M2.5 8a5.5 5.5 0 1 1 1.6 3.9L2 14M2 9.5V14h4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+						<span data-i18n="reset">Reset</span>
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -212,9 +363,8 @@ const quickAmounts = [20, 50, 100, 200];
 
 	.calc__grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-		gap: 1px;
-		background: var(--hairline);
+		grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+		background: var(--surface);
 		border: 1px solid var(--hairline);
 		border-radius: var(--r-lg);
 		overflow: hidden;
@@ -225,32 +375,55 @@ const quickAmounts = [20, 50, 100, 200];
 		display: flex;
 		flex-direction: column;
 		gap: var(--s-lg);
-		padding: var(--s-xl);
+		padding: clamp(20px, 3.5vw, 32px);
 		background: var(--surface);
+		border-right: 1px solid var(--hairline);
 	}
 
 	.field {
 		display: flex;
 		flex-direction: column;
-		gap: var(--s-xs);
+		gap: 8px;
+	}
+
+	.field__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--s-sm);
 	}
 
 	.field__label {
 		color: var(--ink);
 		font-size: 14px;
-		font-weight: 500;
+		font-weight: 600;
 		line-height: 20px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
 	}
 
+	.field__hint {
+		color: var(--mute);
+		font-size: 12px;
+		font-weight: 500;
+	}
+
+	.field__sublabel {
+		color: var(--mute);
+		font-size: 12px;
+		font-weight: 400;
+	}
+
+	/* Amount input container */
 	.amount {
+		position: relative;
 		display: flex;
 		align-items: stretch;
-		border: 1px solid var(--hairline);
+		border: 1.5px solid var(--hairline);
 		border-radius: var(--r-md);
 		background: var(--surface);
-		transition:
-			border-color 0.15s ease,
-			box-shadow 0.15s ease;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
 	}
 
 	.amount:focus-within {
@@ -262,144 +435,143 @@ const quickAmounts = [20, 50, 100, 200];
 		position: relative;
 		display: inline-flex;
 		align-items: center;
+		gap: 4px;
 		flex: 0 0 auto;
-		padding-left: 12px;
-		border-right: 1px solid var(--hairline);
-		color: var(--body);
-	}
-
-	.amount__currency select {
-		appearance: none;
-		-webkit-appearance: none;
-		height: 100%;
-		padding: 0 26px 0 0;
-		border: 0;
-		background: transparent;
+		padding: 0 12px;
+		border-right: 1.5px solid var(--hairline);
+		background: var(--surface-2);
+		border-top-left-radius: calc(var(--r-md) - 1.5px);
+		border-bottom-left-radius: calc(var(--r-md) - 1.5px);
 		color: var(--ink);
 		font-family: var(--font-mono);
-		font-size: 13px;
-		font-weight: 500;
+		font-size: 15px;
+		font-weight: 700;
 		cursor: pointer;
+		user-select: none;
 	}
 
-	
+	.amount__currency-symbol {
+		font-weight: 700;
+		color: var(--accent);
+	}
+
+	.amount__currency-chevron {
+		color: var(--mute);
+		pointer-events: none;
+	}
+
+	.amount__currency-select {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		width: 100%;
+		height: 100%;
+		cursor: pointer;
+	}
 
 	.amount__input {
 		flex: 1 1 auto;
 		min-width: 0;
-		padding: 10px 16px;
+		padding: 12px 18px;
 		border: 0;
 		background: transparent;
 		color: var(--ink);
-		font-size: clamp(22px, 2.4vw, 27px);
-		font-weight: 600;
-		line-height: 36px;
+		font-size: clamp(24px, 3vw, 30px);
+		font-weight: 700;
+		line-height: 1.2;
 		letter-spacing: -0.8px;
 		font-variant-numeric: tabular-nums;
-	}
-
-	.amount__input:focus {
 		outline: none;
 	}
 
 	.amount__input::placeholder {
 		color: var(--faint);
+		opacity: 0.6;
 	}
 
+	/* Quick amounts */
 	.quick {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: var(--s-xs);
+		gap: 6px;
 	}
 
-	.quick__label {
-		margin-right: var(--s-xxs);
-		color: var(--mute);
-		font-size: 12px;
-		font-weight: 500;
-		letter-spacing: 0.02em;
-		text-transform: uppercase;
-	}
-
-	.quick button {
-		height: 28px;
-		padding: 0 10px;
+	.quick__btn {
+		height: 30px;
+		padding: 0 12px;
 		border: 1px solid var(--hairline);
 		border-radius: var(--r-full);
-		background: transparent;
+		background: var(--surface);
 		color: var(--body);
 		font-size: 13px;
+		font-weight: 500;
 		font-variant-numeric: tabular-nums;
 		cursor: pointer;
-		transition:
-			border-color 0.15s ease,
-			background-color 0.15s ease,
-			color 0.15s ease;
+		transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 	}
 
-	.quick button:hover {
+	.quick__btn:hover {
 		border-color: var(--hairline-strong);
 		background: var(--surface-2);
 		color: var(--ink);
 	}
 
+	/* Tip presets grid */
 	.presets {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: var(--s-xs);
+		gap: 8px;
 	}
 
 	.preset {
-		height: 40px;
-		border: 1px solid var(--hairline);
+		height: 42px;
+		border: 1.5px solid var(--hairline);
 		border-radius: var(--r-sm);
 		background: var(--surface);
 		color: var(--body);
 		font-size: 14px;
-		font-weight: 500;
+		font-weight: 600;
 		font-variant-numeric: tabular-nums;
 		cursor: pointer;
-		transition:
-			background-color 0.15s ease,
-			border-color 0.15s ease,
-			color 0.15s ease;
+		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
 	}
 
 	.preset:hover {
 		border-color: var(--hairline-strong);
 		color: var(--ink);
+		background: var(--surface-2);
 	}
 
 	.preset.is-active {
-		background: var(--ink);
-		border-color: var(--ink);
-		color: var(--canvas);
+		background: var(--accent);
+		border-color: var(--accent);
+		color: #ffffff;
+		box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent);
 	}
 
+	/* Custom tip and tax controls */
 	.tip-custom {
 		display: flex;
 		align-items: center;
-		gap: var(--s-sm);
+		gap: 6px;
 	}
 
 	.tip-custom__label {
-		color: var(--body);
-		font-size: 14px;
+		color: var(--mute);
+		font-size: 13px;
+		font-weight: 500;
 	}
 
 	.tip-custom__control {
 		display: inline-flex;
 		align-items: center;
-		gap: 2px;
-		height: 40px;
-		padding: 0 12px 0 10px;
-		border: 1px solid var(--hairline);
+		height: 34px;
+		padding: 0 8px 0 10px;
+		border: 1.5px solid var(--hairline);
 		border-radius: var(--r-sm);
 		background: var(--surface);
-		transition:
-			border-color 0.15s ease,
-			box-shadow 0.15s ease;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
 	}
 
 	.tip-custom__control:focus-within {
@@ -408,16 +580,13 @@ const quickAmounts = [20, 50, 100, 200];
 	}
 
 	.tip-custom__control input {
-		width: 56px;
+		width: 48px;
 		border: 0;
 		background: transparent;
 		color: var(--ink);
-		font-size: 15px;
-		font-weight: 500;
+		font-size: 14px;
+		font-weight: 600;
 		font-variant-numeric: tabular-nums;
-	}
-
-	.tip-custom__control input:focus {
 		outline: none;
 	}
 
@@ -429,14 +598,61 @@ const quickAmounts = [20, 50, 100, 200];
 
 	.tip-custom__suffix {
 		color: var(--mute);
-		font-size: 14px;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	/* Tax row styling */
+	.tax-row {
+		display: flex;
+		align-items: center;
+		gap: var(--s-sm);
+		flex-wrap: wrap;
+	}
+
+	.tax-control {
+		height: 38px;
+	}
+
+	.tax-presets {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.tax-preset-btn,
+	.people-preset-btn {
+		height: 30px;
+		padding: 0 10px;
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-full);
+		background: var(--surface);
+		color: var(--body);
+		font-size: 12.5px;
+		font-weight: 500;
+		cursor: pointer;
+		transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+	}
+
+	.tax-preset-btn:hover,
+	.people-preset-btn:hover {
+		border-color: var(--hairline-strong);
+		background: var(--surface-2);
+		color: var(--ink);
+	}
+
+	/* Stepper control */
+	.stepper-wrap {
+		display: flex;
+		align-items: center;
+		gap: var(--s-sm);
+		flex-wrap: wrap;
 	}
 
 	.stepper {
 		display: inline-flex;
-		align-self: flex-start;
 		align-items: center;
-		border: 1px solid var(--hairline);
+		border: 1.5px solid var(--hairline);
 		border-radius: var(--r-sm);
 		background: var(--surface);
 		overflow: hidden;
@@ -444,23 +660,23 @@ const quickAmounts = [20, 50, 100, 200];
 
 	.stepper button {
 		width: 44px;
-		height: 40px;
+		height: 38px;
 		border: 0;
-		background: transparent;
+		background: var(--surface-2);
 		color: var(--ink);
 		font-size: 18px;
-		line-height: 1;
+		font-weight: 600;
 		cursor: pointer;
 		transition: background-color 0.15s ease;
 	}
 
 	.stepper button:hover {
-		background: var(--surface-2);
+		background: color-mix(in srgb, var(--surface-2) 80%, var(--accent));
 	}
 
 	.stepper input {
-		width: 68px;
-		height: 40px;
+		width: 56px;
+		height: 38px;
 		padding: 0;
 		border: 0;
 		border-left: 1px solid var(--hairline);
@@ -468,14 +684,11 @@ const quickAmounts = [20, 50, 100, 200];
 		background: transparent;
 		color: var(--ink);
 		font-size: 15px;
-		font-weight: 600;
+		font-weight: 700;
 		text-align: center;
 		font-variant-numeric: tabular-nums;
-		-moz-appearance: textfield;
-	}
-
-	.stepper input:focus {
 		outline: none;
+		-moz-appearance: textfield;
 	}
 
 	.stepper input::-webkit-outer-spin-button,
@@ -484,6 +697,13 @@ const quickAmounts = [20, 50, 100, 200];
 		margin: 0;
 	}
 
+	.people-presets {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	/* Segmented control (Rounding) */
 	.segmented {
 		display: inline-flex;
 		align-self: flex-start;
@@ -514,15 +734,15 @@ const quickAmounts = [20, 50, 100, 200];
 		font-size: 13px;
 		font-weight: 500;
 		cursor: pointer;
-		transition:
-			background-color 0.15s ease,
-			color 0.15s ease;
+		transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+		user-select: none;
 	}
 
 	.segmented__option input:checked + span {
 		background: var(--surface);
 		color: var(--ink);
 		box-shadow: var(--shadow-1);
+		font-weight: 600;
 	}
 
 	.segmented__option input:focus-visible + span {
@@ -530,13 +750,22 @@ const quickAmounts = [20, 50, 100, 200];
 		outline-offset: 1px;
 	}
 
+	/* ========================================================= */
+	/* Result Panel (Right side)                                 */
+	/* ========================================================= */
 	.calc__result {
 		display: flex;
 		flex-direction: column;
+		padding: clamp(20px, 3.5vw, 32px);
+		background: color-mix(in srgb, var(--surface) 95%, var(--accent) 5%);
+		color: var(--ink);
+	}
+
+	.result__card {
+		display: flex;
+		flex-direction: column;
 		gap: var(--s-md);
-		padding: var(--s-xl);
-		background: var(--result-bg);
-		color: var(--result-fg);
+		height: 100%;
 	}
 
 	.result__head {
@@ -546,89 +775,66 @@ const quickAmounts = [20, 50, 100, 200];
 		gap: var(--s-sm);
 	}
 
-	.result__caption {
-		margin: 0;
-		color: var(--result-muted);
-		font-size: 13px;
-		font-weight: 500;
+	.result__badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 4px 10px;
+		border-radius: var(--r-full);
+		background: color-mix(in srgb, var(--accent) 12%, transparent);
+		color: var(--accent);
+		font-size: 12.5px;
+		font-weight: 600;
 		letter-spacing: 0.01em;
+	}
+
+	.result__copy {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		height: 32px;
+		padding: 0 12px;
+		border: 1px solid var(--hairline-strong);
+		border-radius: var(--r-sm);
+		background: var(--surface);
+		color: var(--ink);
+		font-size: 13px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+	}
+
+	.result__copy:hover {
+		background: var(--surface-2);
+		border-color: var(--accent);
+	}
+
+	.result__copy.is-copied {
+		background: #10b981;
+		border-color: #10b981;
+		color: #ffffff;
+	}
+
+	.result__amount-wrap {
+		padding: 6px 0;
 	}
 
 	.result__amount {
 		margin: 0;
-		color: var(--result-fg);
-		font-size: clamp(34px, 5vw, 46px);
-		font-weight: 600;
+		color: var(--ink);
+		font-size: clamp(38px, 5.5vw, 52px);
+		font-weight: 800;
 		line-height: 1.05;
-		letter-spacing: -1.8px;
+		letter-spacing: -2px;
 		font-variant-numeric: tabular-nums;
 		word-break: break-word;
 	}
 
-	.result__copy {
-		flex: 0 0 auto;
-		height: 30px;
-		padding: 0 12px;
-		border: 1px solid var(--result-btn-line);
-		border-radius: var(--r-sm);
-		background: transparent;
-		color: var(--result-fg);
-		font-size: 13px;
-		font-weight: 500;
-		cursor: pointer;
-		transition:
-			background-color 0.15s ease,
-			border-color 0.15s ease,
-			color 0.15s ease;
-	}
-
-	.result__copy:hover {
-		background: rgba(0, 0, 0, 0.08);
-	}
-
-	.result__copy.is-copied {
-		background: var(--result-fg);
-		border-color: var(--result-fg);
-		color: var(--result-bg);
-	}
-
-	.result__rows {
-		display: flex;
-		flex-direction: column;
-		gap: var(--s-xs);
-		margin: 0;
-		padding-top: var(--s-md);
-		border-top: 1px solid var(--result-line);
-	}
-
-	.result__row {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: var(--s-md);
-	}
-
-	.result__row dt {
-		color: var(--ink);
-		font-size: 14px;
-	}
-
-	[data-theme='dark'] .result__row dt {
-		color: var(--result-muted);
-	}
-
-	.result__row dd {
-		margin: 0;
-		color: var(--result-fg);
-		font-size: 15px;
-		font-weight: 500;
-		font-variant-numeric: tabular-nums;
-	}
-
+	/* Split Visualizer */
 	.result__split {
 		display: flex;
 		flex-direction: column;
-		gap: var(--s-xs);
+		gap: 6px;
 	}
 
 	.split__bar {
@@ -636,13 +842,20 @@ const quickAmounts = [20, 50, 100, 200];
 		height: 10px;
 		border-radius: var(--r-full);
 		overflow: hidden;
+		background: var(--surface-3);
+		border: 1px solid var(--hairline);
+	}
+
+	:global([data-theme='dark']) .split__bar {
+		background: #1e293b;
+		border-color: #334155;
 	}
 
 	.split__segment {
 		flex: 1 1 0;
-		min-width: 2px;
-		background: rgba(255, 255, 255, 0.08);
-		border-right: 1px solid var(--result-bg);
+		min-width: 4px;
+		background: color-mix(in srgb, var(--accent) 70%, transparent);
+		border-right: 1.5px solid var(--surface);
 	}
 
 	.split__segment:last-child {
@@ -650,32 +863,123 @@ const quickAmounts = [20, 50, 100, 200];
 	}
 
 	.split__segment:nth-child(even) {
-		background: rgba(255, 255, 255, 0.22);
+		background: var(--accent);
 	}
 
 	.split__legend {
 		margin: 0;
-		color: var(--result-muted);
+		color: var(--mute);
 		font-size: 12px;
+		font-weight: 500;
 	}
 
-	.result__formula {
+	/* Breakdown Rows */
+	.result__rows {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
 		margin: 0;
 		padding-top: var(--s-md);
-		border-top: 1px solid var(--result-line);
-		color: var(--result-faint);
-		font-family: var(--font-mono);
+		border-top: 1px solid var(--hairline);
+	}
+
+	.result__row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--s-md);
+	}
+
+	.result__row dt {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: var(--body);
+		font-size: 14px;
+	}
+
+	.result__row-dot {
+		display: inline-block;
+		width: 8px;
+		height: 8px;
+		border-radius: var(--r-full);
+	}
+
+	.result__row-dot--bill {
+		background: #64748b;
+	}
+
+	.result__row-dot--tax {
+		background: #f59e0b;
+	}
+
+	.result__row-dot--tip {
+		background: var(--accent);
+	}
+
+	.result__row-dot--total {
+		background: var(--ink);
+	}
+
+	.result__row-pct {
+		color: var(--mute);
 		font-size: 12px;
+		font-family: var(--font-mono);
+	}
+
+	.result__row dd {
+		margin: 0;
+		color: var(--ink);
+		font-size: 15px;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.result__row--highlight {
+		padding-top: 8px;
+		border-top: 1px dashed var(--hairline);
+	}
+
+	.result__row--highlight dt strong,
+	.result__row--highlight dd strong {
+		font-size: 16px;
+		color: var(--ink);
+	}
+
+	.result__row--sub {
+		color: var(--mute);
+		font-size: 13px;
+	}
+
+	.result__row--sub dd {
+		color: var(--body);
+		font-size: 13.5px;
+	}
+
+	/* Formula and notes */
+	.result__formula {
+		margin: 0;
+		padding-top: var(--s-sm);
+		border-top: 1px solid var(--hairline);
+		color: var(--mute);
+		font-family: var(--font-mono);
+		font-size: 11.5px;
 		line-height: 18px;
 		overflow-wrap: anywhere;
 	}
 
 	.result__note {
 		margin: 0;
-		color: var(--result-muted);
+		padding: 8px 12px;
+		border-radius: var(--r-sm);
+		background: color-mix(in srgb, var(--accent) 8%, transparent);
+		border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+		color: var(--ink);
 		font-size: 12px;
+		font-weight: 500;
 	}
 
+	/* Action buttons */
 	.result__actions {
 		display: flex;
 		gap: var(--s-xs);
@@ -685,44 +989,60 @@ const quickAmounts = [20, 50, 100, 200];
 
 	.result__action {
 		flex: 1 1 0;
-		height: 36px;
-		border: 1px solid var(--result-btn-line);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		height: 38px;
+		padding: 0 12px;
+		border: 1px solid var(--hairline-strong);
 		border-radius: var(--r-sm);
-		background: transparent;
-		color: var(--result-fg);
+		background: var(--surface);
+		color: var(--ink);
 		font-size: 13px;
-		font-weight: 500;
+		font-weight: 600;
 		cursor: pointer;
-		transition:
-			background-color 0.15s ease,
-			border-color 0.15s ease,
-			color 0.15s ease;
+		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 	}
 
 	.result__action:hover {
-		background: rgba(0, 0, 0, 0.08);
+		background: var(--surface-2);
+		border-color: var(--accent);
 	}
 
 	.result__action.is-copied {
-		background: var(--result-fg);
-		border-color: var(--result-fg);
-		color: var(--result-bg);
+		background: #10b981;
+		border-color: #10b981;
+		color: #ffffff;
 	}
 
-	@media (max-width: 880px) {
+	.result__action--reset:hover {
+		border-color: #ef4444;
+		color: #ef4444;
+	}
+
+	@media (max-width: 900px) {
 		.calc__grid {
 			grid-template-columns: minmax(0, 1fr);
 		}
 
-		.calc__panel,
-		.calc__result {
-			padding: var(--s-lg);
+		.calc__panel {
+			border-right: 0;
+			border-bottom: 1px solid var(--hairline);
 		}
 	}
 
-	
-
 	@media (max-width: 480px) {
+		.presets {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 6px;
+		}
+
+		.preset {
+			height: 38px;
+			font-size: 13px;
+		}
+
 		.segmented {
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -735,7 +1055,15 @@ const quickAmounts = [20, 50, 100, 200];
 		}
 
 		.result__amount {
-			font-size: clamp(32px, 9vw, 40px);
+			font-size: clamp(34px, 10vw, 44px);
+		}
+
+		.tax-row {
+			gap: 8px;
+		}
+
+		.stepper-wrap {
+			gap: 8px;
 		}
 	}
 </style>

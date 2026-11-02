@@ -1,4 +1,16 @@
-import { CURRENCIES, DEFAULT_CURRENCY, getCurrency, type Currency } from '../data/currencies';
+import {
+	CURRENCIES,
+	DEFAULT_CURRENCY,
+	getCurrency,
+	currencyDecimals,
+	type Currency,
+} from '../data/currencies';
+import {
+	DEFAULT_LANG,
+	SUPPORTED_LANGUAGES,
+	getTranslation,
+	type TranslationDictionary,
+} from '../data/i18n';
 
 type RoundingMode = 'off' | 'up' | 'down' | 'nearest';
 
@@ -20,153 +32,15 @@ const STORAGE_KEYS = {
 	lang: 'stc-lang',
 } as const;
 
-const URL_KEYS = ['bill', 'tip', 'people', 'currency', 'tax'] as const;
+const URL_KEYS = ['bill', 'tip', 'people', 'currency', 'tax', 'lang'] as const;
 
 const urlParams = new URLSearchParams(window.location.search);
 
-const MIN_PEOPLE = 0;
+const MIN_PEOPLE = 1;
 const MAX_PEOPLE = 999;
 const MAX_TIP = 500;
 const DEFAULT_TIP = 20;
-const DEFAULT_LANG = 'en';
 const MAX_SPLIT_SEGMENTS = 24;
-
-const translations = {
-	en: {
-		heroTitle: 'Calculate tip, split bill, settle up',
-		heroLead: 'Enter your bill, choose a tip percentage, and split among any number of people.',
-		eyebrow: 'Tip Calculator With Tax',
-		ctaTitle: 'The bill is ready. You know the number.',
-		ctaText: 'Open the calculator, drop in the total, and go back to your table.',
-		sectionHowItWorks: 'How it works',
-		sectionTitleSteps: 'Three steps, one number',
-		step1: 'Enter the bill',
-		step1Text: 'Type the total from your receipt — or tap a quick amount to get started in one tap.',
-		step2: 'Pick a tip',
-		step2Text: 'Choose a preset percentage like 15%, 18% or 20%, or type any custom amount you like.',
-		step3: 'Split and share',
-		step3Text: 'Set how many people are paying and read off the exact amount each person owes.',
-		sectionFeatures: "Everything you need, nothing you don't",
-		sectionLeadFeatures: 'A tip calculator that stays out of the way, works offline, and respects your privacy.',
-		feature40plusCurrencies: '40+ currencies',
-		feature40plusCurrenciesText: 'Switch between USD, EUR, GBP, JPY, INR and dozens more. Every amount is formatted the way your currency expects.',
-		featureAnyTipYouLike: 'Any tip you like',
-		featureAnyTipYouLikeText: 'Preset shortcuts for 10% through 50%, plus a custom field for the awkward "split the difference" moments.',
-		featureSplitAnyWay: 'Split any way',
-		featureSplitAnyWayText: 'From two people at lunch to twenty on a rooftop, the per-person total updates as you type.',
-		featureLightDark: 'Light & dark',
-		featureLightDarkText: 'A dark mode that follows your system preference, with a one-click toggle when you want to switch.',
-		featurePrivateByDesign: 'Private by design',
-		featurePrivateByDesignText: 'Everything runs in your browser. No accounts, no receipts uploaded, nothing sent anywhere.',
-		aboutUs: 'About us',
-		contactUs: 'Contact us',
-		howItWorks: 'How it works',
-		faq: 'FAQ',
-		tipGuide: 'Tip guide',
-		footerBlurb: 'Calculate tips, split the bill, and know exactly what each person owes — in any currency, on any device.',
-		footerNote: 'Free to use. No sign-up, no tracking of your amounts.',
-		privacy: 'Privacy policy',
-		terms: 'Terms of use',
-		calcTotalToPay: 'Total to pay',
-		calcPerPerson: 'Each of {people} people pays',
-		calcTip: 'Tip',
-		calcTax: 'Tax',
-		calcTotal: 'Total',
-		calcTipPerPerson: 'Tip per person',
-		copyLink: 'Copy link',
-		copySuccess: 'Copied',
-		copyFailed: 'Copy failed',
-		reset: 'Reset',
-		peopleAriaDec: 'One person fewer',
-		peopleAriaInc: 'One person more',
-	},
-	es: {
-		heroTitle: 'Calcular propina, dividir la cuenta, ponerse al día',
-		heroLead: 'Ingrese su factura, elija un porcentaje de propina y divida entre el número de personas.',
-		eyebrow: 'Calculadora de propina con impuesto',
-		ctaTitle: 'La lista está lista. Sabe el número.',
-		ctaText: 'Abra la calculadora, introduzca el total y vuelva a su mesa.',
-		sectionHowItWorks: 'Cómo funciona',
-		sectionTitleSteps: 'Tres pasos, un número',
-		step1: 'Ingrese la cuenta',
-		step1Text: 'Escriba el total de su recibo — o toque un monto rápido para comenzar en un toque.',
-		step2: 'Elija la propina',
-		step2Text: 'Elija un porcentaje preestablecido como 15%, 18% o 20%, o escriba cualquier cantidad personalizada que le guste.',
-		step3: 'Divida y comparta',
-		step3Text: 'Establezca cuántas personas están pagando y lea la cantidad exacta que debe pagar cada persona.',
-		sectionFeatures: 'Todo lo necesario, nada superfluo',
-		sectionLeadFeatures: 'Una calculadora de propina que se queda fuera del camino, funciona sin conexión y respete su privacidad.',
-		feature40plusCurrencies: '40+ monedas',
-		feature40plusCurrenciesText: 'Cambie entre USD, EUR, GBP, JPY, INR y docenas más. Cada cantidad se formatea como su moneda espera.',
-		featureAnyTipYouLike: 'Propina a su gusto',
-		featureAnyTipYouLikeText: 'Accesos directos preestablecidos para 10% a través del 50%, más un campo personalizado para los momentos "dividir la diferencia".',
-		featureSplitAnyWay: 'Divida la cuenta de la manera que desee',
-		featureSplitAnyWayText: 'De dos personas en una comida a veinte en una azotea, el total por persona se actualiza a medida que escribe.',
-		featureLightDark: 'Luz y oscuro',
-		featureLightDarkText: 'Un modo oscuro que sigue la preferencia de su sistema, con un clic alternándo cuando desee cambiar.',
-		featurePrivateByDesign: 'Privado por diseño',
-		featurePrivateByDesignText: 'Todo se ejecuta en su navegador. No hay cuentas, no se suben recibos, nada se envía a ningún lado.',
-		aboutUs: 'Sobre nosotros',
-		contactUs: 'Contacto',
-		howItWorks: 'Cómo funciona',
-		faq: 'Preguntas frecuentes',
-		tipGuide: 'Guía de propinas',
-		footerBlurb: 'Propinas dividir la cuenta, y saber exactamente qué debe cada persona — en cualquier moneda, en cualquier dispositivo.',
-		footerNote: 'Gratis de usar. No hay registro, no seguimiento de sus montos.',
-		privacy: 'Política de privacidad',
-		terms: 'Términos de uso',
-		calcTotalToPay: 'Total a pagar',
-		calcPerPerson: 'Cada una de {people} personas paga',
-		calcTip: 'Propina',
-		calcTax: 'Impuesto',
-		calcTotal: 'Total',
-		calcTipPerPerson: 'Propina por persona',
-		copyLink: 'Copiar vínculo',
-		copySuccess: 'Copiado',
-		copyFailed: 'Copiar falló',
-		reset: 'Restablecer',
-		peopleAriaDec: 'Una persona menos',
-		peopleAriaInc: 'Una persona más',
-	},
-};
-
-function currentLang(): string {
-	return document.documentElement.dataset.lang ?? DEFAULT_LANG;
-}
-
-function setLang(lang: string) {
-	document.documentElement.dataset.lang = lang;
-	try {
-		localStorage.setItem(STORAGE_KEYS.lang, lang);
-	} catch {}
-	translatePage(lang);
-}
-
-function translatePage(lang: string) {
-	const i18n = translations[lang as keyof typeof translations] || translations.en;
-	if (!i18n) return;
-
-	document.querySelectorAll<HTMLElement>('[data-translate]').forEach((el) => {
-		const key = el.getAttribute('data-translate');
-		if (i18n[key as keyof typeof i18n] !== undefined) {
-			el.innerText = i18n[key as keyof typeof i18n];
-		}
-	});
-}
-
-function initI18n() {
-	const stored = readStorage(STORAGE_KEYS.lang);
-	const fromUrl = urlParams.get('lang');
-	const candidate = fromUrl ?? stored ?? DEFAULT_LANG;
-
-	if (candidate in translations && (translations as any)[candidate]) {
-		state.currentLang = candidate;
-		setLang(candidate);
-	} else {
-		state.currentLang = DEFAULT_LANG;
-		setLang(DEFAULT_LANG);
-	}
-}
 
 const state: AppState = {
 	bill: 0,
@@ -201,22 +75,112 @@ function writeStorage(key: string, value: string) {
 	try {
 		localStorage.setItem(key, value);
 	} catch {
-		/* storage unavailable — the app still works, it just will not remember settings */
+		/* Storage might be disabled in private mode */
 	}
+}
+
+/* ---------------------------------------------------------------- i18n Translation */
+
+function translatePage(lang: string) {
+	const i18n: TranslationDictionary = getTranslation(lang);
+	const isRtl = lang === 'ar';
+
+	document.documentElement.lang = lang;
+	document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+
+	// Translate text content
+	document.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
+		const key = el.getAttribute('data-i18n') as keyof TranslationDictionary;
+		if (key && i18n[key] !== undefined) {
+			el.textContent = i18n[key];
+		}
+	});
+
+	// Translate placeholders
+	document.querySelectorAll<HTMLInputElement>('[data-i18n-placeholder]').forEach((el) => {
+		const key = el.getAttribute('data-i18n-placeholder') as keyof TranslationDictionary;
+		if (key && i18n[key] !== undefined) {
+			el.placeholder = i18n[key];
+		}
+	});
+
+	// Translate aria labels
+	document.querySelectorAll<HTMLElement>('[data-i18n-aria]').forEach((el) => {
+		const key = el.getAttribute('data-i18n-aria') as keyof TranslationDictionary;
+		if (key && i18n[key] !== undefined) {
+			el.setAttribute('aria-label', i18n[key]);
+		}
+	});
+}
+
+function syncLanguageSelects(lang: string) {
+	document.querySelectorAll<HTMLSelectElement>('[data-stc-language]').forEach((select) => {
+		if (select.value !== lang) select.value = lang;
+	});
+}
+
+function setLanguage(lang: string) {
+	if (!SUPPORTED_LANGUAGES.some((l) => l.code === lang)) return;
+	state.currentLang = lang;
+	writeStorage(STORAGE_KEYS.lang, lang);
+	syncLanguageSelects(lang);
+	translatePage(lang);
+	notify();
+	scheduleUrlSync();
+}
+
+function initI18n() {
+	const stored = readStorage(STORAGE_KEYS.lang);
+	const fromUrl = urlParams.get('lang');
+	let candidate = fromUrl ?? stored;
+
+	if (!candidate) {
+		const browserLang = navigator.language?.split('-')[0]?.toLowerCase();
+		if (browserLang && SUPPORTED_LANGUAGES.some((l) => l.code === browserLang)) {
+			candidate = browserLang;
+		}
+	}
+
+	const activeLang =
+		candidate && SUPPORTED_LANGUAGES.some((l) => l.code === candidate)
+			? candidate
+			: DEFAULT_LANG;
+
+	state.currentLang = activeLang;
+	syncLanguageSelects(activeLang);
+	translatePage(activeLang);
+
+	document.querySelectorAll<HTMLSelectElement>('[data-stc-language]').forEach((select) => {
+		select.addEventListener('change', () => {
+			setLanguage(select.value);
+		});
+	});
 }
 
 /* ---------------------------------------------------------------- formatting */
 
 function getFormatter(currency: Currency): Intl.NumberFormat {
-	return new Intl.NumberFormat(currency.locale, {
-		style: 'currency',
-		currency: currency.code,
-	});
+	try {
+		return new Intl.NumberFormat(currency.locale, {
+			style: 'currency',
+			currency: currency.code,
+		});
+	} catch {
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+		});
+	}
 }
 
 function formatMoney(value: number, currency: Currency): string {
-	if (!Number.isFinite(value)) return getFormatter(currency).format(0);
-	return getFormatter(currency).format(value);
+	if (!Number.isFinite(value)) value = 0;
+	try {
+		return getFormatter(currency).format(value);
+	} catch {
+		const decimals = currencyDecimals(currency.code);
+		return `${currency.symbol}${value.toFixed(decimals)}`;
+	}
 }
 
 function formatPercent(value: number): string {
@@ -263,12 +227,18 @@ function trimNumber(value: number): string {
 
 function applyRounding(value: number, mode: RoundingMode, currency: Currency): number {
 	if (mode === 'off') return value;
-	const decimals = getFormatter(currency).resolvedOptions().maximumFractionDigits ?? 2;
-	const unit = 10 ** -decimals;
-	const scaled = value / unit;
-	if (mode === 'up') return Math.ceil(scaled) * unit;
-	if (mode === 'down') return Math.floor(scaled) * unit;
-	return Math.round(scaled) * unit;
+	const decimals = currencyDecimals(currency.code);
+
+	if (decimals === 0) {
+		if (mode === 'up') return Math.ceil(value);
+		if (mode === 'down') return Math.floor(value);
+		return Math.round(value);
+	}
+
+	// For standard currencies with cents, round to nearest whole currency unit
+	if (mode === 'up') return Math.ceil(value);
+	if (mode === 'down') return Math.floor(value);
+	return Math.round(value);
 }
 
 /* --------------------------------------------------------------------- theme */
@@ -279,7 +249,13 @@ function currentTheme(): 'light' | 'dark' {
 
 function updateThemeColorMeta(theme: 'light' | 'dark') {
 	const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-	if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#fafafa');
+	if (meta) meta.setAttribute('content', theme === 'dark' ? '#090d16' : '#2563eb');
+}
+
+function syncThemeButtons(theme: 'light' | 'dark') {
+	document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach((button) => {
+		button.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+	});
 }
 
 function setTheme(theme: 'light' | 'dark') {
@@ -287,12 +263,6 @@ function setTheme(theme: 'light' | 'dark') {
 	writeStorage(STORAGE_KEYS.theme, theme);
 	updateThemeColorMeta(theme);
 	syncThemeButtons(theme);
-}
-
-function syncThemeButtons(theme: 'light' | 'dark') {
-	document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach((button) => {
-		button.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-	});
 }
 
 function initTheme() {
@@ -308,9 +278,20 @@ function initTheme() {
 
 /* ----------------------------------------------------------------- currency */
 
-function syncCurrencySelects(code: string) {
+function syncCurrencyElements(code: string) {
+	const currency = getCurrency(code);
+
 	document.querySelectorAll<HTMLSelectElement>('[data-stc-currency]').forEach((select) => {
 		if (select.value !== code) select.value = code;
+	});
+
+	document.querySelectorAll<HTMLElement>('[data-out="currency-symbol"]').forEach((el) => {
+		el.textContent = currency.symbol;
+	});
+
+	document.querySelectorAll<HTMLElement>('[data-quick-amount]').forEach((button) => {
+		const amount = button.dataset.quickAmount;
+		if (amount) button.textContent = `${currency.symbol}${amount}`;
 	});
 }
 
@@ -322,15 +303,15 @@ function initCurrencySelects() {
 	if (candidate && CURRENCIES.some((currency) => currency.code === candidate)) {
 		state.currency = candidate;
 	}
-	syncCurrencySelects(state.currency);
+	syncCurrencyElements(state.currency);
 
 	document.querySelectorAll<HTMLElement>('[data-stc-currency]').forEach((select) => {
-		select.addEventListener('change', () => {
-			const code = select.value;
+		select.addEventListener('change', (e) => {
+			const code = (e.target as HTMLSelectElement).value;
 			if (!CURRENCIES.some((currency) => currency.code === code)) return;
 			setState({ currency: code });
 			writeStorage(STORAGE_KEYS.currency, code);
-			syncCurrencySelects(code);
+			syncCurrencyElements(code);
 		});
 	});
 }
@@ -344,13 +325,10 @@ function stateParams(): URLSearchParams {
 	if (state.people !== 1) params.set('people', String(state.people));
 	if (state.currency !== DEFAULT_CURRENCY) params.set('currency', state.currency);
 	if (state.taxPct !== 0) params.set('tax', trimNumber(state.taxPct));
+	if (state.currentLang !== DEFAULT_LANG) params.set('lang', state.currentLang);
 	return params;
 }
 
-/**
- * Mirrors the calculator state into the query string so a split can be shared
- * as a link. Params we do not own (utm_*, ref, …) are left untouched.
- */
 function syncUrl() {
 	const params = new URLSearchParams(window.location.search);
 	for (const key of URL_KEYS) params.delete(key);
@@ -385,7 +363,7 @@ async function copyText(text: string): Promise<boolean> {
 			return true;
 		}
 	} catch {
-		/* fall through to the legacy path */
+		/* Fall through to fallback */
 	}
 
 	try {
@@ -398,9 +376,6 @@ async function copyText(text: string): Promise<boolean> {
 		document.body.appendChild(field);
 		field.select();
 
-		// Legacy fallback for browsers without the async clipboard API (non-secure contexts).
-		// Typed loosely on purpose: the standard signature is deprecated, but the method
-		// is still the only synchronous copy path when the page is served over plain HTTP.
 		const legacyExec = (
 			document as unknown as { execCommand?: (command: string) => boolean }
 		).execCommand;
@@ -418,13 +393,16 @@ async function copyText(text: string): Promise<boolean> {
 	}
 }
 
-function flashButton(button: HTMLButtonElement, message: string, restore = 'Copy') {
+function flashButton(button: HTMLElement, message: string, restoreText: string) {
 	button.classList.add('is-copied');
-	button.textContent = message;
+	const labelEl = button.querySelector('[data-out="copy-label"]') ?? button;
+	const original = labelEl.textContent;
+	labelEl.textContent = message;
+
 	window.setTimeout(() => {
 		button.classList.remove('is-copied');
-		button.textContent = restore;
-	}, 1600);
+		labelEl.textContent = restoreText || original || 'Copy';
+	}, 1800);
 }
 
 /* --------------------------------------------------------------- calculator */
@@ -442,34 +420,46 @@ function initCalculator() {
 	const resetButton = root.querySelector<HTMLButtonElement>('[data-action="reset"]');
 	const copyButton = root.querySelector<HTMLButtonElement>('[data-action="copy"]');
 	const copyLinkButton = root.querySelector<HTMLButtonElement>('[data-action="copy-link"]');
+
 	const outPerPerson = root.querySelector<HTMLElement>('[data-out="per-person"]');
 	const outPerPersonCaption = root.querySelector<HTMLElement>('[data-out="per-person-caption"]');
+	const outBillDisplay = root.querySelector<HTMLElement>('[data-out="bill-display"]');
 	const outTip = root.querySelector<HTMLElement>('[data-out="tip"]');
+	const outTipPct = root.querySelector<HTMLElement>('[data-out="tip-pct"]');
 	const outTotal = root.querySelector<HTMLElement>('[data-out="total"]');
 	const outTax = root.querySelector<HTMLElement>('[data-out="tax"]');
+	const outTaxPct = root.querySelector<HTMLElement>('[data-out="tax-pct"]');
 	const outTipPerPerson = root.querySelector<HTMLElement>('[data-out="tip-per-person"]');
+	const outTipPerPersonRow = root.querySelector<HTMLElement>('[data-out="tip-per-person-row"]');
 	const outFormula = root.querySelector<HTMLElement>('[data-out="formula"]');
 	const outRoundingNote = root.querySelector<HTMLElement>('[data-out="rounding-note"]');
 	const outSplit = root.querySelector<HTMLElement>('[data-out="split"]');
 	const outSplitBar = root.querySelector<HTMLElement>('[data-out="split-bar"]');
 	const outSplitLegend = root.querySelector<HTMLElement>('[data-out="split-legend"]');
-	const tipPresets = Array.from(
-		root.querySelectorAll<HTMLButtonElement>('[data-tip-preset]'),
-	);
+
+	const tipPresets = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-tip-preset]'));
 	const roundingInputs = Array.from(
 		root.querySelectorAll<HTMLInputElement>('[name="stc-rounding"]'),
 	);
 
+	// Restore stored preferences
 	const storedRounding = readStorage(STORAGE_KEYS.rounding);
-	if (storedRounding === 'off' || storedRounding === 'up' || storedRounding === 'down' || storedRounding === 'nearest') {
+	if (
+		storedRounding === 'off' ||
+		storedRounding === 'up' ||
+		storedRounding === 'down' ||
+		storedRounding === 'nearest'
+	) {
 		state.rounding = storedRounding;
 	}
+
 	const storedTax = readStorage(STORAGE_KEYS.tax);
 	if (storedTax !== null && Number.isFinite(Number(storedTax))) {
 		state.taxPct = Math.min(100, Math.max(0, Number(storedTax)));
+		if (taxInput) taxInput.value = String(state.taxPct);
 	}
 
-	/* Restore a shared split from the query string. */
+	// Restore from URL query string
 	const billFromUrl = Number(urlParams.get('bill'));
 	if (urlParams.has('bill') && Number.isFinite(billFromUrl) && billFromUrl >= 0) {
 		state.bill = billFromUrl;
@@ -477,25 +467,39 @@ function initCalculator() {
 	}
 
 	const tipFromUrl = Number(urlParams.get('tip'));
-	if (urlParams.has('tip') && Number.isFinite(tipFromUrl) && tipFromUrl >= 0 && tipFromUrl <= MAX_TIP) {
+	if (
+		urlParams.has('tip') &&
+		Number.isFinite(tipFromUrl) &&
+		tipFromUrl >= 0 &&
+		tipFromUrl <= MAX_TIP
+	) {
 		state.tipPct = tipFromUrl;
 		if (tipInput) tipInput.value = String(tipFromUrl);
 	}
 
 	const taxFromUrl = Number(urlParams.get('tax'));
-	if (urlParams.has('tax') && Number.isFinite(taxFromUrl) && taxFromUrl >= 0 && taxFromUrl <= 100) {
+	if (
+		urlParams.has('tax') &&
+		Number.isFinite(taxFromUrl) &&
+		taxFromUrl >= 0 &&
+		taxFromUrl <= 100
+	) {
 		state.taxPct = taxFromUrl;
-		if (tipInput) tipInput.value = String(taxFromUrl);
+		if (taxInput) taxInput.value = String(taxFromUrl); // Bug fixed: now taxInput, not tipInput
 	}
 
 	const peopleFromUrl = Number(urlParams.get('people'));
-	if (urlParams.has('people') && Number.isFinite(peopleFromUrl) && peopleFromUrl >= MIN_PEOPLE) {
+	if (
+		urlParams.has('people') &&
+		Number.isFinite(peopleFromUrl) &&
+		peopleFromUrl >= MIN_PEOPLE
+	) {
 		state.people = Math.min(MAX_PEOPLE, Math.round(peopleFromUrl));
 		if (peopleInput) peopleInput.value = String(state.people);
 	}
 
 	const setPeople = (value: number) => {
-		const people = Math.min(MAX_PEOPLE, Math.max(0, Math.round(value)));
+		const people = Math.min(MAX_PEOPLE, Math.max(MIN_PEOPLE, Math.round(value)));
 		state.people = people;
 		if (peopleInput) peopleInput.value = String(people);
 		render();
@@ -509,15 +513,17 @@ function initCalculator() {
 	};
 
 	const setTax = (value: number) => {
-		state.taxPct = Math.min(100, Math.max(0, value));
-		if (taxInput) taxInput.value = String(state.taxPct);
-		writeStorage(STORAGE_KEYS.tax, String(state.taxPct));
+		const tax = Math.min(100, Math.max(0, value));
+		state.taxPct = tax;
+		if (taxInput && document.activeElement !== taxInput) taxInput.value = String(tax);
+		writeStorage(STORAGE_KEYS.tax, String(tax));
 		render();
 	};
 
 	const renderSplit = () => {
 		if (!outSplit || !outSplitBar || !outSplitLegend) return;
 		const count = state.people;
+		const i18n = getTranslation(state.currentLang);
 
 		if (count < 2 || count > MAX_SPLIT_SEGMENTS) {
 			outSplit.hidden = true;
@@ -532,11 +538,12 @@ function initCalculator() {
 				return segment;
 			}),
 		);
-		outSplitLegend.textContent = `Split equally between ${count} people`;
+		outSplitLegend.textContent = i18n.splitEqually.replace('{count}', String(count));
 	};
 
 	const render = () => {
 		const currency = getCurrency(state.currency);
+		const i18n = getTranslation(state.currentLang);
 		const taxAmount = state.bill * (state.taxPct / 100);
 		const tipAmount = state.bill * (state.tipPct / 100);
 		const total = state.bill + taxAmount + tipAmount;
@@ -545,24 +552,26 @@ function initCalculator() {
 		let tipPerPerson: number;
 		let perPersonCaption: string;
 
-		if (state.people <= 0) {
-			// Prevent division by zero; show total instead of per-person amount
+		if (state.people <= 1) {
 			perPerson = total;
-			tipPerPerson = 0;
-			perPersonCaption = 'Total to pay';
+			tipPerPerson = tipAmount;
+			perPersonCaption = i18n.totalToPay;
+			if (outTipPerPersonRow) outTipPerPersonRow.hidden = true;
 		} else {
 			const perPersonRaw = total / state.people;
 			perPerson = applyRounding(perPersonRaw, state.rounding, currency);
 			tipPerPerson = tipAmount / state.people;
-
-			perPersonCaption =
-				state.people === 1 ? 'Total to pay' : `Each of ${state.people} people pays`;
+			perPersonCaption = i18n.eachOfPeoplePays.replace('{people}', String(state.people));
+			if (outTipPerPersonRow) outTipPerPersonRow.hidden = false;
 		}
 
 		if (outPerPerson) outPerPerson.textContent = formatMoney(perPerson, currency);
+		if (outBillDisplay) outBillDisplay.textContent = formatMoney(state.bill, currency);
 		if (outTip) outTip.textContent = formatMoney(tipAmount, currency);
+		if (outTipPct) outTipPct.textContent = `(${formatPercent(state.tipPct)})`;
 		if (outTotal) outTotal.textContent = formatMoney(total, currency);
 		if (outTax) outTax.textContent = formatMoney(taxAmount, currency);
+		if (outTaxPct) outTaxPct.textContent = `(${formatPercent(state.taxPct)})`;
 		if (outTipPerPerson) outTipPerPerson.textContent = formatMoney(tipPerPerson, currency);
 
 		if (outPerPersonCaption) {
@@ -570,23 +579,23 @@ function initCalculator() {
 		}
 
 		if (outFormula) {
-			outFormula.textContent = `${formatMoney(state.bill, currency)} bill + ${formatMoney(
+			outFormula.textContent = `${formatMoney(state.bill, currency)} + ${formatMoney(
 				taxAmount,
 				currency,
-			)} tax + ${formatMoney(tipAmount, currency)} tip (${formatPercent(state.tipPct)}) = ${formatMoney(total, currency)}`;
+			)} tax + ${formatMoney(tipAmount, currency)} tip = ${formatMoney(total, currency)}`;
 		}
 
 		if (outRoundingNote) {
 			const active = state.rounding !== 'off';
 			outRoundingNote.hidden = !active;
 			if (active) {
-				const label =
+				const noteText =
 					state.rounding === 'up'
-						? 'up'
+						? i18n.roundedNoteUp
 						: state.rounding === 'down'
-							? 'down'
-							: 'to the nearest';
-				outRoundingNote.textContent = `Per-person total rounded ${label}.`;
+							? i18n.roundedNoteDown
+							: i18n.roundedNoteNearest;
+				outRoundingNote.textContent = noteText;
 			}
 		}
 
@@ -594,7 +603,7 @@ function initCalculator() {
 
 		tipPresets.forEach((preset) => {
 			const value = Number(preset.dataset.tipPreset);
-			const isActive = value === state.tipPct;
+			const isActive = Math.abs(value - state.tipPct) < 0.001;
 			preset.classList.toggle('is-active', isActive);
 			preset.setAttribute('aria-pressed', isActive ? 'true' : 'false');
 		});
@@ -603,14 +612,11 @@ function initCalculator() {
 			input.checked = input.value === state.rounding;
 		});
 
-		root.querySelectorAll<HTMLElement>('[data-quick-amount]').forEach((button) => {
-			const amount = button.dataset.quickAmount;
-			if (amount) button.textContent = `${currency.symbol}${amount}`;
-		});
-
+		syncCurrencyElements(state.currency);
 		scheduleUrlSync();
 	};
 
+	// Bill Input Events
 	billInput?.addEventListener('input', () => {
 		const caret = billInput.selectionStart ?? billInput.value.length;
 		const digitsBefore = countDigits(billInput.value.slice(0, caret));
@@ -637,6 +643,7 @@ function initCalculator() {
 		}
 	});
 
+	// Tip Input Events
 	tipInput?.addEventListener('input', () => {
 		const parsed = parseFloat(tipInput.value);
 		setTip(Number.isFinite(parsed) ? parsed : 0);
@@ -646,6 +653,7 @@ function initCalculator() {
 		tipInput.value = String(state.tipPct);
 	});
 
+	// Tax Input Events
 	taxInput?.addEventListener('input', () => {
 		const parsed = parseFloat(taxInput.value);
 		setTax(Number.isFinite(parsed) ? parsed : 0);
@@ -655,14 +663,31 @@ function initCalculator() {
 		taxInput.value = String(state.taxPct);
 	});
 
+	// Tip Presets
 	tipPresets.forEach((preset) => {
 		preset.addEventListener('click', () => {
 			const value = Number(preset.dataset.tipPreset);
 			setTip(value);
-			if (tipInput) tipInput.value = String(value);
 		});
 	});
 
+	// Tax Presets
+	root.querySelectorAll<HTMLButtonElement>('[data-tax-preset]').forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const val = parseFloat(btn.dataset.taxPreset ?? '0');
+			setTax(val);
+		});
+	});
+
+	// People Presets
+	root.querySelectorAll<HTMLButtonElement>('[data-people-preset]').forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const count = parseInt(btn.dataset.peoplePreset ?? '1', 10);
+			setPeople(count);
+		});
+	});
+
+	// People Input & Steppers
 	peopleInput?.addEventListener('input', () => {
 		const parsed = parseInt(peopleInput.value, 10);
 		setPeople(Number.isFinite(parsed) ? parsed : MIN_PEOPLE);
@@ -680,6 +705,7 @@ function initCalculator() {
 		setPeople(state.people + 1);
 	});
 
+	// Rounding Radio Controls
 	roundingInputs.forEach((input) => {
 		input.addEventListener('change', () => {
 			if (!input.checked) return;
@@ -690,36 +716,51 @@ function initCalculator() {
 		});
 	});
 
-	const languageSelect = document.querySelector<HTMLSelectElement>('#nav-language');
-	languageSelect?.addEventListener('change', (e) => {
-		const selectedLang = (e.target as HTMLSelectElement).value;
-		setLang(selectedLang);
-	});
-
+	// Reset Button
 	resetButton?.addEventListener('click', () => {
 		state.bill = 0;
 		state.rounding = 'off';
+		state.tipPct = DEFAULT_TIP;
+		state.taxPct = 0;
+		state.people = 1;
 		writeStorage(STORAGE_KEYS.rounding, 'off');
+
 		if (billInput) billInput.value = '';
 		if (tipInput) tipInput.value = String(DEFAULT_TIP);
+		if (taxInput) taxInput.value = '0';
 		if (peopleInput) peopleInput.value = '1';
-		setTip(DEFAULT_TIP);
-		setPeople(1);
+
 		render();
 	});
 
+	// Copy Main Result
 	copyButton?.addEventListener('click', async () => {
 		if (!outPerPerson) return;
-		const text = outPerPerson.textContent ?? '';
-		const copied = await copyText(text);
-		flashButton(copyButton, copied ? 'Copied' : 'Copy failed');
+		const i18n = getTranslation(state.currentLang);
+		const currency = getCurrency(state.currency);
+		const taxAmount = state.bill * (state.taxPct / 100);
+		const tipAmount = state.bill * (state.tipPct / 100);
+		const total = state.bill + taxAmount + tipAmount;
+
+		let summary = '';
+		if (state.people > 1) {
+			summary = `${outPerPerson.textContent} each (${state.people} people)\nTotal: ${formatMoney(total, currency)} (Bill: ${formatMoney(state.bill, currency)}, Tax: ${formatMoney(taxAmount, currency)}, Tip: ${formatMoney(tipAmount, currency)})\nCalculated at https://tipcalculatorwithtax.com`;
+		} else {
+			summary = `Total: ${outPerPerson.textContent} (Bill: ${formatMoney(state.bill, currency)}, Tax: ${formatMoney(taxAmount, currency)}, Tip: ${formatMoney(tipAmount, currency)})\nCalculated at https://tipcalculatorwithtax.com`;
+		}
+
+		const copied = await copyText(summary);
+		flashButton(copyButton, copied ? i18n.copied : i18n.copyFailed, i18n.copyResult);
 	});
 
+	// Copy Shareable Link
 	copyLinkButton?.addEventListener('click', async () => {
+		const i18n = getTranslation(state.currentLang);
 		const copied = await copyText(shareUrl());
-		flashButton(copyLinkButton, copied ? 'Link copied' : 'Copy failed', 'Copy link');
+		flashButton(copyLinkButton, copied ? i18n.linkCopied : i18n.copyFailed, i18n.copyLink);
 	});
 
+	// Quick Amount Buttons
 	root.querySelectorAll<HTMLButtonElement>('[data-quick-amount]').forEach((button) => {
 		button.addEventListener('click', () => {
 			const amount = button.dataset.quickAmount;

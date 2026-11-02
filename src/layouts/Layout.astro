@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { SUPPORTED_LANGUAGES } from '../data/i18n';
 
 export interface Props {
 	title: string;
@@ -26,64 +27,89 @@ const ogImage = new URL('/og-image.png', SITE).toString();
 <html lang="en" data-theme="light">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-		<meta name="apple-mobile-web-app-title" content="QuickTip" />
+		<meta name="apple-mobile-web-app-title" content="TipCalculator" />
 		<link rel="manifest" href="/site.webmanifest" />
 		<link rel="canonical" href={canonical} />
 		<meta name="generator" content={Astro.generator} />
 
+		<!-- International SEO hreflang tags -->
+		<link rel="alternate" hreflang="x-default" href={canonical} />
+		{
+			SUPPORTED_LANGUAGES.map((lang) => (
+				<link
+					rel="alternate"
+					hreflang={lang.code}
+					href={`${SITE}${path}?lang=${lang.code}`}
+				/>
+			))
+		}
+
 		<title>{title}</title>
 		<meta name="description" content={description} />
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
-		<meta name="theme-color" content="#fafafa" />
+		<meta name="theme-color" content="#2563eb" />
 
+		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="website" />
-		<meta property="og:site_name" content="Tip Calculator" />
+		<meta property="og:site_name" content="Tip Calculator With Tax" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonical} />
 		<meta property="og:image" content={ogImage} />
-		<meta property="og:image:alt" content="Tip calculator with tax and split bill" />
+		<meta property="og:image:alt" content="Tip Calculator With Tax & Bill Splitter interface preview" />
+
+		<!-- Twitter -->
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={ogImage} />
-		<meta name="keywords" content="tip calculator, tip calculator iphone, free tip calculator, simple tip calculator, restaurant tip calculator, tip calculator with tax, tax and tip calculator, tip calculator split bill, tip and split calculator, bill split calculator, restaurant bill calculator, tip calculator per person, tip calculator round up, tip calculator round down, tip calculator nearest dollar, tip percentage calculator, 15% tip calculator, 18% tip calculator, 20% tip calculator, 25% tip calculator, how to calculate tip, how much to tip, tip before or after tax, tipping by country, tipping in Canada, tipping in UK, tipping in Australia, tipping in Japan, tip calculator Canada, tip calculator UK, tip calculator Australia, tip calculator Texas, tip calculator New York, tip calculator California, tip calculator app, online tip calculator, free tip calculator, tip calculator formula, tip calculator euro, tip calculator pound, tip calculator currency, tip calculator dark mode, tip calculator with tax, tip calculator google, tip calculator how much to tip, google tip calculator" />
 
+		<!-- Preconnect fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap"
 		/>
 
+		<!-- Structured Data (JSON-LD) -->
 		{
 			jsonLd.map((schema) => (
 				<script type="application/ld+json" set:html={JSON.stringify(schema)} />
 			))
 		}
 
+		<!-- Instant Theme & Language Restore to prevent flash -->
 		<script is:inline>
 			(function () {
 				try {
-					var stored = localStorage.getItem('stc-theme');
+					var storedTheme = localStorage.getItem('stc-theme');
 					var theme =
-						stored === 'light' || stored === 'dark'
-							? stored
+						storedTheme === 'light' || storedTheme === 'dark'
+							? storedTheme
 							: window.matchMedia('(prefers-color-scheme: dark)').matches
 								? 'dark'
 								: 'light';
 					document.documentElement.dataset.theme = theme;
-				} catch (error) {
+
+					var storedLang = localStorage.getItem('stc-lang');
+					var params = new URLSearchParams(window.location.search);
+					var urlLang = params.get('lang');
+					var lang = urlLang || storedLang || 'en';
+					document.documentElement.lang = lang;
+					document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+				} catch (e) {
 					document.documentElement.dataset.theme = 'light';
+					document.documentElement.lang = 'en';
 				}
 			})();
 		</script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">Skip to content</a>
+		<a class="skip-link" href="#main">Skip to main content</a>
 		<slot />
 		<script>
 			import '../scripts/app.ts';
@@ -91,7 +117,7 @@ const ogImage = new URL('/og-image.png', SITE).toString();
 
 		<!-- Google tag (gtag.js) -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-MXQZHHX20F"></script>
-		<script>
+		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());

@@ -1,31 +1,156 @@
 ---
-
 import ThemeToggle from './ThemeToggle.astro';
+import { CURRENCIES, POPULAR_CURRENCY_CODES, CURRENCY_REGIONS } from '../data/currencies';
+import { SUPPORTED_LANGUAGES } from '../data/i18n';
+
+const popularCurrencies = CURRENCIES.filter((c) => POPULAR_CURRENCY_CODES.includes(c.code));
 ---
 
 <header class="nav" id="site-nav">
 	<div class="container nav__inner">
 		<a class="nav__brand" href="/" aria-label="Tip Calculator With Tax home">
-			<img
-				class="nav__mark"
-				src="/favicon-96x96.png"
-				alt="Tip Calculator With Tax favicon"
-				width="18"
-				height="18"
-				aria-hidden="true"
-			/>
-			<span class="nav__wordmark">Tip Calculator With Tax</span>
+			<span class="nav__mark-wrap">
+				<img
+					class="nav__mark"
+					src="/favicon-96x96.png"
+					alt="Tip Calculator With Tax favicon"
+					width="22"
+					height="22"
+				/>
+			</span>
+			<span class="nav__brand-text">
+				<span class="nav__wordmark" data-i18n="navBrand">Tip Calculator With Tax</span>
+			</span>
 		</a>
 
-		<nav class="nav__links" aria-label="Main">
-			<a href="#calculator">Calculator</a>
-			<a href="#how-it-works">How it works</a>
-			<a href="#tip-guide">Tip guide</a>
-			<a href="#faq">FAQ</a>
+		<nav class="nav__links" aria-label="Main Navigation">
+			<a href="#calculator" data-i18n="navCalculator">Calculator</a>
+			<a href="#how-it-works" data-i18n="navHowItWorks">How it works</a>
+			<a href="#tip-guide" data-i18n="navTipGuide">Tip guide</a>
+			<a href="#faq" data-i18n="navFaq">FAQ</a>
 		</nav>
 
 		<div class="nav__actions">
+			<!-- Currency Selector (Desktop) -->
+			<div class="nav__currency-slot">
+				<label class="sr-only" for="nav-currency-select" data-i18n="navCurrency">Currency</label>
+				<div class="nav__select-wrap">
+					<svg
+						class="nav__select-icon"
+						width="15"
+						height="15"
+						viewBox="0 0 20 20"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						aria-hidden="true"
+					>
+						<circle cx="10" cy="10" r="7.25" stroke="currentColor" stroke-width="1.4"></circle>
+						<path
+							d="M2.9 10h14.2M10 2.75c2 2.2 3 4.6 3 7.25s-1 5.05-3 7.25c-2-2.2-3-4.6-3-7.25s1-5.05 3-7.25Z"
+							stroke="currentColor"
+							stroke-width="1.4"></path>
+					</svg>
+					<select
+						class="nav__select"
+						id="nav-currency-select"
+						data-stc-currency
+						aria-label="Select currency"
+					>
+						<optgroup label="Popular">
+							{
+								popularCurrencies.map((c) => (
+									<option value={c.code}>
+										{c.code} ({c.symbol})
+									</option>
+								))
+							}
+						</optgroup>
+						{
+							CURRENCY_REGIONS.map((region) => (
+								<optgroup label={region}>
+									{CURRENCIES.filter((c) => c.region === region).map((c) => (
+										<option value={c.code}>
+											{c.code} – {c.name} ({c.symbol})
+										</option>
+									))}
+								</optgroup>
+							))
+						}
+					</select>
+					<svg
+						class="nav__chevron"
+						width="12"
+						height="12"
+						viewBox="0 0 12 12"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						aria-hidden="true"
+					>
+						<path
+							d="M2.5 4.5 6 8l3.5-3.5"
+							stroke="currentColor"
+							stroke-width="1.3"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</div>
+			</div>
+
+			<!-- Language Selector (Desktop) -->
+			<div class="nav__lang-slot">
+				<label class="sr-only" for="nav-language-select" data-i18n="navLanguage">Language</label>
+				<div class="nav__select-wrap">
+					<svg
+						class="nav__select-icon"
+						width="15"
+						height="15"
+						viewBox="0 0 20 20"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						aria-hidden="true"
+					>
+						<path
+							d="M10 3v2m-6 0h12M7 5c0 5-3 8-5 9m4-5c1.5 2 3.5 3.5 5 4M13.5 9l4 8m-6.5 0 4-8m-3 5.5h5"
+							stroke="currentColor"
+							stroke-width="1.3"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+					<select
+						class="nav__select"
+						id="nav-language-select"
+						data-stc-language
+						aria-label="Select language"
+					>
+						{
+							SUPPORTED_LANGUAGES.map((lang) => (
+								<option value={lang.code}>{lang.label}</option>
+							))
+						}
+					</select>
+					<svg
+						class="nav__chevron"
+						width="12"
+						height="12"
+						viewBox="0 0 12 12"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						aria-hidden="true"
+					>
+						<path
+							d="M2.5 4.5 6 8l3.5-3.5"
+							stroke="currentColor"
+							stroke-width="1.3"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</div>
+			</div>
+
+			<!-- Theme Toggle -->
 			<ThemeToggle />
+
+			<!-- Mobile Menu Toggle -->
 			<button
 				class="nav__menu-button"
 				type="button"
@@ -35,31 +160,131 @@ import ThemeToggle from './ThemeToggle.astro';
 				aria-label="Open menu"
 			>
 				<svg
-					width="16"
-					height="16"
-					viewBox="0 0 16 16"
+					class="nav__menu-icon-open"
+					width="18"
+					height="18"
+					viewBox="0 0 20 20"
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg"
 					aria-hidden="true"
 				>
 					<path
-						d="M2 4h12M2 8h12M2 12h12"
+						d="M3 5h14M3 10h14M3 15h14"
 						stroke="currentColor"
-						stroke-width="1.5"
+						stroke-width="1.6"
+						stroke-linecap="round"></path>
+				</svg>
+				<svg
+					class="nav__menu-icon-close"
+					width="18"
+					height="18"
+					viewBox="0 0 20 20"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+					aria-hidden="true"
+				>
+					<path
+						d="M4 4l12 12M16 4L4 16"
+						stroke="currentColor"
+						stroke-width="1.6"
 						stroke-linecap="round"></path>
 				</svg>
 			</button>
-			
 		</div>
 	</div>
 
+	<!-- Mobile Menu Drawer -->
 	<div class="nav__mobile" id="nav-mobile-menu" data-mobile-menu hidden>
-		<a href="#calculator">Calculator</a>
-		<a href="#how-it-works">How it works</a>
-		<a href="#tip-guide">Tip guide</a>
-		<a href="#faq">FAQ</a>
-		<div class="nav__mobile-currency">
-			<span class="nav__mobile-label">Currency</span>
+		<nav class="nav__mobile-links">
+			<a href="#calculator" data-i18n="navCalculator">Calculator</a>
+			<a href="#how-it-works" data-i18n="navHowItWorks">How it works</a>
+			<a href="#tip-guide" data-i18n="navTipGuide">Tip guide</a>
+			<a href="#faq" data-i18n="navFaq">FAQ</a>
+		</nav>
+
+		<div class="nav__mobile-controls">
+			<div class="nav__mobile-row">
+				<span class="nav__mobile-label" data-i18n="navCurrency">Currency</span>
+				<div class="nav__select-wrap nav__select-wrap--mobile">
+					<select
+						class="nav__select"
+						id="nav-mobile-currency"
+						data-stc-currency
+						aria-label="Select currency"
+					>
+						<optgroup label="Popular">
+							{
+								popularCurrencies.map((c) => (
+									<option value={c.code}>
+										{c.code} ({c.symbol})
+									</option>
+								))
+							}
+						</optgroup>
+						{
+							CURRENCY_REGIONS.map((region) => (
+								<optgroup label={region}>
+									{CURRENCIES.filter((c) => c.region === region).map((c) => (
+										<option value={c.code}>
+											{c.code} – {c.name} ({c.symbol})
+										</option>
+									))}
+								</optgroup>
+							))
+						}
+					</select>
+					<svg
+						class="nav__chevron"
+						width="12"
+						height="12"
+						viewBox="0 0 12 12"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						aria-hidden="true"
+					>
+						<path
+							d="M2.5 4.5 6 8l3.5-3.5"
+							stroke="currentColor"
+							stroke-width="1.3"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</div>
+			</div>
+
+			<div class="nav__mobile-row">
+				<span class="nav__mobile-label" data-i18n="navLanguage">Language</span>
+				<div class="nav__select-wrap nav__select-wrap--mobile">
+					<select
+						class="nav__select"
+						id="nav-mobile-language"
+						data-stc-language
+						aria-label="Select language"
+					>
+						{
+							SUPPORTED_LANGUAGES.map((lang) => (
+								<option value={lang.code}>{lang.label}</option>
+							))
+						}
+					</select>
+					<svg
+						class="nav__chevron"
+						width="12"
+						height="12"
+						viewBox="0 0 12 12"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						aria-hidden="true"
+					>
+						<path
+							d="M2.5 4.5 6 8l3.5-3.5"
+							stroke="currentColor"
+							stroke-width="1.3"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</div>
+			</div>
 		</div>
 	</div>
 </header>
@@ -68,57 +293,74 @@ import ThemeToggle from './ThemeToggle.astro';
 	.nav {
 		position: sticky;
 		top: 0;
-		z-index: 50;
-		background: color-mix(in srgb, var(--canvas) 88%, transparent);
-		backdrop-filter: saturate(180%) blur(12px);
-		-webkit-backdrop-filter: saturate(180%) blur(12px);
+		z-index: 100;
+		background: color-mix(in srgb, var(--canvas) 92%, transparent);
+		backdrop-filter: saturate(180%) blur(16px);
+		-webkit-backdrop-filter: saturate(180%) blur(16px);
 		border-bottom: 1px solid var(--hairline);
+		transition: background-color 0.2s ease, border-color 0.2s ease;
 	}
 
 	.nav__inner {
 		display: flex;
 		align-items: center;
-		gap: var(--s-lg);
+		justify-content: space-between;
+		gap: var(--s-md);
 		height: var(--nav-h);
 	}
 
 	.nav__brand {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--s-xs);
+		gap: 10px;
 		min-width: 0;
 		color: var(--ink);
 		font-size: 15px;
-		font-weight: 600;
-		letter-spacing: -0.2px;
+		font-weight: 700;
+		letter-spacing: -0.3px;
+		text-decoration: none;
 	}
 
 	.nav__brand:hover {
 		color: var(--ink);
 	}
 
+	.nav__mark-wrap {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border-radius: var(--r-sm);
+		background: color-mix(in srgb, var(--accent) 12%, transparent);
+		border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+		flex-shrink: 0;
+	}
+
+	.nav__mark {
+		width: 20px;
+		height: 20px;
+		object-fit: contain;
+	}
+
+	.nav__brand-text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
 	.nav__wordmark {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-	}
-
-	.nav__mark {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 28px;
-		height: 28px;
-		border-radius: var(--r-sm);
-		background: var(--ink);
-		color: var(--canvas);
+		font-weight: 700;
 	}
 
 	.nav__links {
 		display: flex;
 		align-items: center;
-		gap: var(--s-xs);
-		margin-right: auto;
+		gap: 4px;
+		margin-inline: auto 12px;
 	}
 
 	.nav__links a {
@@ -126,10 +368,10 @@ import ThemeToggle from './ThemeToggle.astro';
 		border-radius: var(--r-full);
 		color: var(--body);
 		font-size: 14px;
+		font-weight: 500;
 		line-height: 20px;
-		transition:
-			background-color 0.15s ease,
-			color 0.15s ease;
+		text-decoration: none;
+		transition: background-color 0.15s ease, color 0.15s ease;
 	}
 
 	.nav__links a:hover {
@@ -141,95 +383,197 @@ import ThemeToggle from './ThemeToggle.astro';
 		display: flex;
 		align-items: center;
 		gap: var(--s-xs);
-		margin-left: auto;
+		flex-shrink: 0;
 	}
 
-	.nav__currency-slot {
-		display: flex;
-		min-width: 0;
+	/* Select styling */
+	.nav__select-wrap {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		height: 38px;
+		padding: 0 28px 0 32px;
+		border: 1px solid var(--hairline);
+		border-radius: var(--r-full);
+		background: var(--surface);
+		color: var(--ink);
+		transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+	}
+
+	.nav__select-wrap:hover {
+		border-color: var(--hairline-strong);
+		background: var(--surface-2);
+	}
+
+	.nav__select-wrap:focus-within {
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+	}
+
+	.nav__select-icon {
+		position: absolute;
+		left: 10px;
+		color: var(--mute);
+		pointer-events: none;
+	}
+
+	.nav__chevron {
+		position: absolute;
+		right: 10px;
+		color: var(--mute);
+		pointer-events: none;
+	}
+
+	.nav__select {
+		appearance: none;
+		-webkit-appearance: none;
+		border: 0;
+		background: transparent;
+		color: var(--ink);
+		font-family: inherit;
+		font-size: 13px;
+		font-weight: 500;
+		cursor: pointer;
+		outline: none;
+		width: 100%;
+	}
+
+	.nav__select option {
+		background: var(--surface);
+		color: var(--ink);
+	}
+
+	.nav__currency-slot .nav__select {
+		font-family: var(--font-mono);
+		font-weight: 600;
+		font-size: 12.5px;
 	}
 
 	.nav__menu-button {
 		display: none;
 		align-items: center;
 		justify-content: center;
-		width: 36px;
-		height: 36px;
+		width: 38px;
+		height: 38px;
 		padding: 0;
 		border: 1px solid var(--hairline);
-		border-radius: var(--r-sm);
+		border-radius: var(--r-full);
 		background: var(--surface);
 		color: var(--ink);
 		cursor: pointer;
+		transition: background-color 0.15s ease, border-color 0.15s ease;
 	}
 
-	.nav__mobile {
+	.nav__menu-button:hover {
+		background: var(--surface-2);
+		border-color: var(--hairline-strong);
+	}
+
+	.nav__menu-icon-close {
 		display: none;
+	}
+
+	.nav__menu-button[aria-expanded='true'] .nav__menu-icon-open {
+		display: none;
+	}
+
+	.nav__menu-button[aria-expanded='true'] .nav__menu-icon-close {
+		display: block;
+	}
+
+	/* Mobile drawer */
+	.nav__mobile {
+		display: flex;
 		flex-direction: column;
-		padding: var(--s-xs) var(--s-lg) var(--s-md);
+		padding: var(--s-md) var(--s-lg) var(--s-lg);
 		border-top: 1px solid var(--hairline);
 		background: var(--canvas);
+		box-shadow: var(--shadow-2);
+		animation: slideDown 0.2s ease-out;
 	}
 
-	.nav__mobile a {
-		padding: 10px 0;
-		color: var(--body);
+	.nav__mobile[hidden] {
+		display: none;
+	}
+
+	@keyframes slideDown {
+		from {
+			opacity: 0;
+			transform: translateY(-8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.nav__mobile-links {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.nav__mobile-links a {
+		padding: 12px 0;
+		color: var(--ink);
 		font-size: 15px;
+		font-weight: 500;
+		text-decoration: none;
 		border-bottom: 1px solid var(--hairline-soft);
+		transition: color 0.15s ease;
 	}
 
-	.nav__mobile-currency {
+	.nav__mobile-links a:hover {
+		color: var(--accent);
+	}
+
+	.nav__mobile-controls {
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-sm);
+		padding-top: var(--s-md);
+	}
+
+	.nav__mobile-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: var(--s-md);
-		padding-top: var(--s-md);
 	}
 
 	.nav__mobile-label {
 		color: var(--mute);
 		font-family: var(--font-mono);
 		font-size: 12px;
-		letter-spacing: 0.08em;
+		font-weight: 600;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
 	}
 
-	@media (max-width: 900px) {
+	.nav__select-wrap--mobile {
+		flex: 1;
+		max-width: 200px;
+		padding-left: 12px;
+	}
+
+	@media (max-width: 980px) {
 		.nav__links {
 			display: none;
 		}
 
-		.nav__currency-slot {
+		.nav__currency-slot,
+		.nav__lang-slot {
 			display: none;
 		}
 
 		.nav__menu-button {
 			display: inline-flex;
 		}
-
-		.nav__mobile:not([hidden]) {
-			display: flex;
-		}
-
-		.nav__mobile a {
-			padding: 12px 0;
-			color: var(--body);
-			font-size: 15px;
-			border-bottom: 1px solid var(--hairline-soft);
-		}
-
-		.nav__mobile-currency {
-			padding-top: var(--s-md);
-		}
 	}
 
-	@media (max-width: 520px) {
+	@media (max-width: 480px) {
 		.nav__wordmark {
+			max-width: 170px;
 			font-size: 14px;
-		}
-
-		.nav__mobile-label {
-			display: none;
 		}
 	}
 </style>
@@ -241,16 +585,17 @@ import ThemeToggle from './ThemeToggle.astro';
 	toggle?.addEventListener('click', () => {
 		if (!menu) return;
 		const open = toggle.getAttribute('aria-expanded') === 'true';
-		toggle.setAttribute('aria-expanded', String(!open));
-		toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
-		menu.hidden = open;
+		const nextState = !open;
+		toggle.setAttribute('aria-expanded', String(nextState));
+		toggle.setAttribute('aria-label', nextState ? 'Close menu' : 'Open menu');
+		menu.hidden = !nextState;
 	});
 
 	menu?.querySelectorAll('a').forEach((link) => {
 		link.addEventListener('click', () => {
 			toggle?.setAttribute('aria-expanded', 'false');
 			toggle?.setAttribute('aria-label', 'Open menu');
-			menu.hidden = true;
+			if (menu) menu.hidden = true;
 		});
 	});
 </script>

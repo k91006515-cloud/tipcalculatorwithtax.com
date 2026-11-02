@@ -2,6 +2,8 @@
 export interface FaqItem {
 	question: string;
 	answer: string;
+	qKey?: string;
+	aKey?: string;
 }
 
 interface Props {
@@ -11,29 +13,32 @@ interface Props {
 const { items } = Astro.props;
 ---
 
-<div class="faq">
+<div class="faq" role="region" aria-label="Frequently Asked Questions">
 	{
-		items.map((item) => (
-			<details class="faq__item">
+		items.map((item, idx) => (
+			<details class="faq__item" open={idx === 0}>
 				<summary class="faq__question">
-					<span>{item.question}</span>
-					<svg
-						aria-hidden="true"
-						width="14"
-						height="14"
-						viewBox="0 0 14 14"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							d="M7 2v10M2 7h10"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-						/>
-					</svg>
+					<span data-i18n={item.qKey}>{item.question}</span>
+					<span class="faq__icon" aria-hidden="true">
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 16 16"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M8 3v10M3 8h10"
+								stroke="currentColor"
+								stroke-width="1.6"
+								stroke-linecap="round"
+							/>
+						</svg>
+					</span>
 				</summary>
-				<p class="faq__answer">{item.answer}</p>
+				<div class="faq__answer-wrap">
+					<p class="faq__answer" data-i18n={item.aKey}>{item.answer}</p>
+				</div>
 			</details>
 		))
 	}
@@ -48,6 +53,11 @@ const { items } = Astro.props;
 
 	.faq__item {
 		border-bottom: 1px solid var(--hairline);
+		transition: background-color 0.15s ease;
+	}
+
+	.faq__item[open] {
+		background: color-mix(in srgb, var(--surface) 60%, transparent);
 	}
 
 	.faq__question {
@@ -55,13 +65,14 @@ const { items } = Astro.props;
 		align-items: center;
 		justify-content: space-between;
 		gap: var(--s-lg);
-		padding: var(--s-md) 0;
+		padding: var(--s-md) 4px;
 		color: var(--ink);
 		font-size: 16px;
-		font-weight: 500;
+		font-weight: 600;
 		line-height: 24px;
 		cursor: pointer;
 		list-style: none;
+		user-select: none;
 	}
 
 	.faq__question::-webkit-details-marker {
@@ -72,21 +83,39 @@ const { items } = Astro.props;
 		color: var(--accent);
 	}
 
-	.faq__question svg {
-		flex: 0 0 auto;
+	.faq__icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		border-radius: var(--r-full);
+		background: var(--surface-2);
 		color: var(--mute);
-		transition: transform 0.2s ease;
+		flex-shrink: 0;
+		transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 	}
 
-	.faq__item[open] .faq__question svg {
+	.faq__question:hover .faq__icon {
+		color: var(--ink);
+		background: var(--surface-3);
+	}
+
+	.faq__item[open] .faq__icon {
 		transform: rotate(45deg);
+		background: color-mix(in srgb, var(--accent) 15%, transparent);
+		color: var(--accent);
+	}
+
+	.faq__answer-wrap {
+		padding: 0 4px var(--s-lg);
 	}
 
 	.faq__answer {
-		max-width: 720px;
-		padding-bottom: var(--s-lg);
+		margin: 0;
+		max-width: 760px;
 		color: var(--body);
 		font-size: 15px;
-		line-height: 24px;
+		line-height: 26px;
 	}
 </style>
