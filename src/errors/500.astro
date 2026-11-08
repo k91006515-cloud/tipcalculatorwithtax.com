@@ -1,5 +1,39 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 ---
 
-<h1>Server Error</h1>
-<p>Something went wrong on our end. Please try again later.</p>
+<Layout
+	title="Server Error — Tip Calculator With Tax"
+	description="Something went wrong on our end. Please try again later."
+	noindex={true}
+>
+	<Header />
+	<main id="main" class="page">
+		<div class="container page__inner">
+			<div class="page-card card-content error-card">
+				<p class="badge-negative">Error 500</p>
+				<h1 class="page__title display-lg">Server Error</h1>
+				<p class="section-lead">Something went wrong on our end. Please try again in a few moments.</p>
+				<div class="error-action">
+					<a class="btn btn-primary" href="/">Return to Calculator</a>
+				</div>
+			</div>
+		</div>
+	</main>
+	<Footer />
+</Layout>
+
+<style>
+	.error-card {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--spacing-md);
+		padding: clamp(32px, 5vw, 48px);
+	}
+	.error-action {
+		margin-top: var(--spacing-sm);
+	}
+</style>

@@ -2,22 +2,28 @@
 const year = new Date().getFullYear();
 ---
 
-<footer class="footer">
+<footer class="footer" role="contentinfo">
 	<div class="container footer__inner">
 		<div class="footer__brand">
 			<a class="footer__logo" href="/" aria-label="Tip Calculator With Tax home">
-				<img
-					src="/favicon-96x96.png"
-					width="22"
-					height="22"
-					alt="Tip Calculator With Tax logo"
-					aria-hidden="true"
-				/>
-				<span data-i18n="navBrand">Tip Calculator With Tax</span>
+				<span class="footer__logo-mark" aria-hidden="true">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<rect width="24" height="24" rx="6" fill="#9fe870" />
+						<path d="M7 12h10M12 7v10" stroke="#0e0f0c" stroke-width="2.2" stroke-linecap="round"/>
+						<circle cx="17" cy="7" r="1.5" fill="#0e0f0c" />
+					</svg>
+				</span>
+				<span class="footer__brand-title" data-i18n="navBrand">Tip Calculator With Tax</span>
 			</a>
 			<p class="footer__blurb" data-i18n="footerBlurb">
 				Free, private, and accurate tip calculator with sales tax support and multi-person bill splitting for 40+ world currencies.
 			</p>
+			<div class="footer__badge">
+				<span class="badge-positive">
+					<span class="footer__dot"></span>
+					<span>100% Private & Client-side</span>
+				</span>
+			</div>
 		</div>
 
 		<nav class="footer__column" aria-label="Calculator links">
@@ -57,56 +63,91 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
+	/* footer: Background {colors.ink}, text {colors.canvas-soft}, padding {spacing.3xl} {spacing.xl} (DESIGN.md) */
 	.footer {
-		margin-top: var(--s-3xl);
-		border-top: 1px solid var(--hairline);
-		background: var(--canvas);
+		margin-top: 0;
+		background-color: var(--color-ink);
+		color: var(--color-canvas-soft);
+		font-family: var(--font-sans);
+		font-size: 14px;
+		line-height: 20px;
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
 	.footer__inner {
 		display: grid;
 		grid-template-columns: minmax(0, 1.8fr) repeat(3, minmax(0, 1fr));
-		gap: var(--s-2xl);
-		padding-block: var(--s-3xl) var(--s-xl);
+		gap: var(--spacing-2xl);
+		padding-block: var(--spacing-3xl) var(--spacing-xl);
+	}
+
+	.footer__brand {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
 	}
 
 	.footer__logo {
 		display: inline-flex;
 		align-items: center;
 		gap: 10px;
-		color: var(--ink);
-		font-size: 16px;
-		font-weight: 700;
-		letter-spacing: -0.3px;
+		color: #ffffff;
+		font-family: var(--font-display);
+		font-size: 17px;
+		font-weight: 900;
+		letter-spacing: -0.02em;
 		text-decoration: none;
 	}
 
 	.footer__logo:hover {
-		color: var(--accent);
+		color: var(--color-primary);
+		opacity: 1;
+	}
+
+	.footer__logo-mark {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.footer__brand-title {
+		color: #ffffff;
 	}
 
 	.footer__blurb {
-		max-width: 360px;
-		margin-top: var(--s-md);
+		max-width: 380px;
 		font-size: 14px;
 		line-height: 22px;
-		color: var(--body);
+		color: #b5baa8;
+		margin: 0;
+	}
+
+	.footer__badge {
+		margin-top: var(--spacing-xs);
+	}
+
+	.footer__dot {
+		width: 6px;
+		height: 6px;
+		border-radius: var(--rounded-full);
+		background-color: var(--color-positive);
 	}
 
 	.footer__heading {
-		margin: 0 0 var(--s-md);
-		color: var(--ink);
-		font-family: var(--font-mono);
-		font-size: 12px;
-		font-weight: 600;
-		letter-spacing: 0.08em;
+		margin: 0 0 var(--spacing-md);
+		color: #ffffff;
+		font-family: var(--font-sans);
+		font-size: 13px;
+		font-weight: 700;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
 	}
 
 	.footer__column ul {
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
+		gap: 8px;
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -114,8 +155,8 @@ const year = new Date().getFullYear();
 
 	.footer__column a {
 		display: inline-block;
-		padding-block: 3px;
-		color: var(--body);
+		padding-block: 2px;
+		color: #b5baa8;
 		font-size: 14px;
 		line-height: 20px;
 		text-decoration: none;
@@ -123,7 +164,9 @@ const year = new Date().getFullYear();
 	}
 
 	.footer__column a:hover {
-		color: var(--accent);
+		color: var(--color-primary);
+		opacity: 1;
+		text-decoration: none;
 	}
 
 	.footer__bottom {
@@ -131,10 +174,10 @@ const year = new Date().getFullYear();
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--s-sm);
-		padding-block: var(--s-lg);
-		border-top: 1px solid var(--hairline);
-		color: var(--mute);
+		gap: var(--spacing-sm);
+		padding-block: var(--spacing-lg);
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		color: #848a7b;
 		font-size: 13px;
 	}
 
@@ -145,7 +188,7 @@ const year = new Date().getFullYear();
 	@media (max-width: 880px) {
 		.footer__inner {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: var(--s-xl) var(--s-lg);
+			gap: var(--spacing-xl) var(--spacing-lg);
 		}
 
 		.footer__brand {

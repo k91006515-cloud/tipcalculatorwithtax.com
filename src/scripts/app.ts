@@ -249,7 +249,7 @@ function currentTheme(): 'light' | 'dark' {
 
 function updateThemeColorMeta(theme: 'light' | 'dark') {
 	const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-	if (meta) meta.setAttribute('content', theme === 'dark' ? '#090d16' : '#2563eb');
+	if (meta) meta.setAttribute('content', theme === 'dark' ? '#0e0f0c' : '#e8ebe6');
 }
 
 function syncThemeButtons(theme: 'light' | 'dark') {
