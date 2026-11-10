@@ -11,11 +11,7 @@ const popularCurrencies = CURRENCIES.filter((c) => POPULAR_CURRENCY_CODES.includ
 		<!-- Brand / Logo -->
 		<a class="nav__brand" href="/" aria-label="Tip Calculator With Tax home">
 			<span class="nav__mark-wrap" aria-hidden="true">
-				<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<rect width="24" height="24" rx="6" fill="#9fe870" />
-					<path d="M7 12h10M12 7v10" stroke="#0e0f0c" stroke-width="2.2" stroke-linecap="round"/>
-					<circle cx="17" cy="7" r="1.5" fill="#0e0f0c" />
-				</svg>
+				<img src="/favicon.svg" alt="" width="36" height="36" class="nav__logo-img" />
 			</span>
 			<span class="nav__brand-text">
 				<span class="nav__wordmark" data-i18n="navBrand">Tip Calculator With Tax</span>
@@ -330,9 +326,14 @@ const popularCurrencies = CURRENCIES.filter((c) => POPULAR_CURRENCY_CODES.includ
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		border-radius: var(--rounded-md);
-		background-color: var(--color-primary);
 		flex-shrink: 0;
+	}
+
+	.nav__logo-img {
+		display: block;
+		width: 36px;
+		height: 36px;
+		object-fit: contain;
 	}
 
 	.nav__brand-text {
