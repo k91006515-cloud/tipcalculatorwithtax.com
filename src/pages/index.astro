@@ -195,6 +195,14 @@ const faqItems = [
 		answer:
 			'No. We respect your complete privacy. Calculations happen exclusively inside your device memory. We do not store or transmit your bill totals, party size, or payment details. Only your chosen preferences (currency, language, theme) are remembered locally in your own browser.',
 	},
+	{
+		qKey: 'faq9Q',
+		question: 'How do you calculate tip and tax?',
+		aKey: 'faq9A',
+		answer:
+			'Calculate sales tax on the pre-tax bill subtotal, then calculate the tip on that same pre-tax subtotal (not on the tax). Add bill + tax + tip for the grand total. For example, on a $100 bill with 8% tax and a 20% tip: tax is $8, tip is $20, and the total is $128.',
+	},
+
 ];
 
 const jsonLd = [
@@ -260,8 +268,8 @@ const jsonLd = [
 ---
 
 <Layout
-	title="Tip Calculator With Tax — Free Bill Splitter & Tip Guide"
-	description="Fast, free tip calculator with tax support and bill splitting. Calculate tips in 40+ currencies, split among friends, round per person, and view international tipping guides."
+	title="Tax and Tip Calculator — Free Bill Splitter & Tip Guide"
+	description="Calculate tax and tip fast with our free tax and tip calculator. Add US sales tax, split restaurant bills, and get per-person totals with clean rounding — 100% private and works offline."
 	path="/"
 	jsonLd={jsonLd}
 >
@@ -282,7 +290,7 @@ const jsonLd = [
 					</div>
 
 					<h1 class="hero__title display-xl" data-i18n="heroTitle">
-						Tip Calculator With Tax
+						Tax and Tip Calculator
 					</h1>
 
 					<p class="hero__subtitle body-lg" data-i18n="heroSubtitle">
@@ -329,6 +337,23 @@ const jsonLd = [
 				</div>
 			</div>
 		</section>
+		<!-- ======================================================== -->
+		<!-- Worked Example: Tax and Tip Calculation (static HTML)    -->
+		<!-- ======================================================== -->
+		<section class="worked-example" aria-labelledby="worked-example-heading">
+			<div class="container">
+				<div class="section-header">
+					<h2 id="worked-example-heading" class="worked-example__title section-title display-md">Worked example: tax and tip on a $100 bill</h2>
+					<p class="worked-example__text section-lead">
+						<strong>$100</strong> restaurant bill + <strong>8%</strong> sales tax + <strong>20%</strong> tip on the pre-tax subtotal = <strong>$128</strong> total.
+					</p>
+					<p class="worked-example__note">
+						Assumption: tip is calculated on the pre-tax food subtotal ($100 × 20% = $20 tip), and 8% sales tax is added to the bill ($100 × 8% = $8 tax). Total = $100 + $8 + $20 = $128.
+					</p>
+				</div>
+			</div>
+		</section>
+
 
 		<!-- ======================================================== -->
 		<!-- Content Band 1: How It Works (White Canvas Band)         -->
@@ -853,6 +878,37 @@ const jsonLd = [
 		max-width: 820px;
 		margin: 0 auto;
 	}
+		/* Worked Example                                                */
+		/* ======================================================== */
+		.worked-example {
+			padding-block: clamp(32px, 5vw, 56px);
+			background-color: var(--color-canvas-soft);
+		}
+
+		.worked-example__title {
+			margin: 0 0 var(--spacing-sm) 0;
+			font-family: var(--font-display);
+			font-size: clamp(24px, 3vw, 30px);
+			font-weight: 700;
+			color: var(--color-ink);
+			letter-spacing: -0.02em;
+		}
+
+		.worked-example__text {
+			margin: 0 0 var(--spacing-xs) 0;
+			font-size: clamp(17px, 2vw, 20px);
+			line-height: 26px;
+			color: var(--color-ink);
+			font-weight: 600;
+		}
+
+		.worked-example__note {
+			margin: 0;
+			font-size: 14px;
+			line-height: 22px;
+			color: var(--color-body);
+		}
+
 
 	/* ======================================================== */
 	/* Polarity-Flipped Dark CTA Banner (card-feature-dark)     */
