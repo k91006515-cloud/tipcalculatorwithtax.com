@@ -1,0 +1,10 @@
+# Canonical redirects - Consolidate www/non-www and HTTP/HTTPS
+# Redirect HTTP to HTTPS
+http://tipcalculatorwithtax.com/* https://tipcalculatorwithtax.com/:splat 301!
+http://www.tipcalculatorwithtax.com/* https://www.tipcalculatorwithtax.com/:splat 301!
+
+# Redirect non-www to www (choose one as canonical - using www)
+https://tipcalculatorwithtax.com/* https://www.tipcalculatorwithtax.com/:splat 301!
+
+# Also handle trailing slashes consistently
+https://www.tipcalculatorwithtax.com https://www.tipcalculatorwithtax.com/ 301!

@@ -1,2 +1,28 @@
-https://titcalculator-com.pages.dev*
+# Cloudflare Pages Preview Deployment - noindex to avoid duplicate content
+https://tipcalculatorwithtax-com.pages.dev*
   X-Robots-Tag: noindex
+
+# Security Headers
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Cache static assets
+/public/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache manifest and service worker appropriately
+/site.webmanifest
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Fonts
+https://fonts.googleapis.com/*
+  Cache-Control: public, max-age=31536000, immutable
+
+https://fonts.gstatic.com/*
+  Cache-Control: public, max-age=31536000, immutable

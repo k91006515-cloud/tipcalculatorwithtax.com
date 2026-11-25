@@ -5,6 +5,7 @@ export interface TranslationDictionary {
 	navHowItWorks: string;
 	navTipGuide: string;
 	navFaq: string;
+	navTaxTip: string;
 	navCurrency: string;
 	navLanguage: string;
 	navTheme: string;
@@ -189,6 +190,7 @@ export const TRANSLATIONS: Record<string, TranslationDictionary> = {
 		navHowItWorks: 'How it works',
 		navTipGuide: 'Tip guide',
 		navFaq: 'FAQ',
+		navTaxTip: 'Tax vs tip',
 		navCurrency: 'Currency',
 		navLanguage: 'Language',
 		navTheme: 'Theme',
@@ -196,9 +198,9 @@ export const TRANSLATIONS: Record<string, TranslationDictionary> = {
 		closeMenu: 'Close menu',
 
 		heroBadge: 'Free • Fast • 40+ Currencies • Bill Splitter',
-		heroTitle: 'Tip Calculator With Tax',
+		heroTitle: 'Tip Calculator With Tax & Bill Splitter',
 		heroSubtitle:
-			'Calculate tips, include sales tax, split the bill evenly, and round per-person totals accurately in any currency.',
+			'Calculate tips before or after tax, add US sales tax, split restaurant bills, and round per-person totals in 40+ currencies. Free, private, works offline.',
 
 		calcHeading: 'Tip Calculator',
 		billAmount: 'Bill amount',
@@ -269,6 +271,22 @@ export const TRANSLATIONS: Record<string, TranslationDictionary> = {
 		feat6Title: '100% Private & Offline',
 		feat6Desc:
 			'Calculations run entirely in your browser. No sign-up, no analytics tracking your dollar amounts, works offline.',
+
+
+		// Tax vs Tip comparison section
+		taxTipEyebrow: 'Tax & tip calculation',
+		taxTipTitle: 'Should you tip before tax or after tax?',
+		taxTipLead:
+			'This is one of the most common tipping questions. The short answer: <strong>standard etiquette says tip on the pre-tax subtotal</strong>, but many people tip on the final total for simplicity. Our calculator shows you both so you can decide.',
+		tipBeforeTaxTitle: 'Tip on Pre-Tax Subtotal (Recommended)',
+		tipBeforeTaxDesc:
+			'Calculate tip on the food & beverage total before sales tax is added. This is the traditional etiquette standard because tax is a government fee, not a service charge.',
+		tipAfterTaxTitle: 'Tip on Post-Tax Total (Common)',
+		tipAfterTaxDesc:
+			'Calculate tip on the final bill including tax. Many diners do this for convenience, and some restaurants suggest tip amounts based on the post-tax total.',
+		tipDifferenceTitle: 'The difference',
+		tipDifferenceDesc:
+			'On a $100 bill with 8% tax and 20% tip, tipping on the total instead of the subtotal adds <strong>$1.60</strong> to your tip. On larger bills or higher tax rates, the difference grows. Use our calculator above to see exact numbers for your specific bill — just enter your subtotal and tax rate, and it calculates both ways automatically.',
 
 		guideEyebrow: 'Tip guide',
 		guideTitle: 'What to tip by service & destination',
@@ -543,6 +561,7 @@ export const TRANSLATIONS: Record<string, TranslationDictionary> = {
 		navHowItWorks: 'Fonctionnement',
 		navTipGuide: 'Guide pourboire',
 		navFaq: 'FAQ',
+	navTaxTip: 'Tax vs tip',
 		navCurrency: 'Devise',
 		navLanguage: 'Langue',
 		navTheme: 'Thème',
@@ -720,6 +739,7 @@ export const TRANSLATIONS: Record<string, TranslationDictionary> = {
 		navHowItWorks: 'So funktioniert’s',
 		navTipGuide: 'Trinkgeld-Guide',
 		navFaq: 'FAQ',
+	navTaxTip: 'Tax vs tip',
 		navCurrency: 'Währung',
 		navLanguage: 'Sprache',
 		navTheme: 'Design',
@@ -1251,6 +1271,7 @@ export const TRANSLATIONS: Record<string, TranslationDictionary> = {
 		navHowItWorks: 'Come funziona',
 		navTipGuide: 'Guida alla mancia',
 		navFaq: 'FAQ',
+	navTaxTip: 'Tax vs tip',
 		navCurrency: 'Valuta',
 		navLanguage: 'Lingua',
 		navTheme: 'Tema',

@@ -158,14 +158,14 @@ const faqItems = [
 		question: 'How does the per-person split work with tax and tip?',
 		aKey: 'faq3A',
 		answer:
-			'The calculator takes your bill amount, adds the calculated sales tax and tip amount to get the grand total, and divides that grand total equally by the number of people. If rounding is enabled, it cleanly rounds each person’s share to a whole currency unit.',
+			'The calculator takes your bill amount, adds the calculated sales tax and tip amount to get the grand total, and divides that grand total equally by the number of people. If rounding is enabled, it cleanly rounds each person\'s share to a whole currency unit.',
 	},
 	{
 		qKey: 'faq4Q',
 		question: 'How does rounding up or down work?',
 		aKey: 'faq4A',
 		answer:
-			'When splitting bills among multiple friends, decimals can create awkward coin amounts. "Round up" raises each person’s share to the next whole currency unit (e.g., $18.35 becomes $19.00), leaving a slight positive tip surplus. "Round down" drops down to the whole unit, and "Nearest" rounds to the closest whole unit.',
+			'When splitting bills among multiple friends, decimals can create awkward coin amounts. "Round up" raises each person\'s share to the next whole currency unit (e.g., $18.35 becomes $19.00), leaving a slight positive tip surplus. "Round down" drops down to the whole unit, and "Nearest" rounds to the closest whole unit.',
 	},
 	{
 		qKey: 'faq5Q',
@@ -210,7 +210,7 @@ const jsonLd = [
 		'@context': 'https://schema.org',
 		'@type': 'WebApplication',
 		name: 'Tip Calculator With Tax',
-		url: 'https://tipcalculatorwithtax.com/',
+		url: 'https://www.tipcalculatorwithtax.com/',
 		applicationCategory: 'FinanceApplication',
 		operatingSystem: 'Any',
 		description:
@@ -262,14 +262,14 @@ const jsonLd = [
 		'@context': 'https://schema.org',
 		'@type': 'WebSite',
 		name: 'Tip Calculator With Tax',
-		url: 'https://tipcalculatorwithtax.com/',
+		url: 'https://www.tipcalculatorwithtax.com/',
 	},
 ];
 ---
 
 <Layout
-	title="Tax and Tip Calculator — Free Bill Splitter & Tip Guide"
-	description="Calculate tax and tip fast with our free tax and tip calculator. Add US sales tax, split restaurant bills, and get per-person totals with clean rounding — 100% private and works offline."
+	title="Tip Calculator With Tax — Free Bill Splitter (Pre-Tax & Post-Tax)"
+	description="Calculate tips before or after tax with our free tip calculator. Add US sales tax, split restaurant bills, round per-person totals, and see exact amounts in 40+ currencies. 100% private, works offline."
 	path="/"
 	jsonLd={jsonLd}
 >
@@ -290,7 +290,7 @@ const jsonLd = [
 					</div>
 
 					<h1 class="hero__title display-xl" data-i18n="heroTitle">
-						Tax and Tip Calculator
+						Tip Calculator With Tax & Bill Splitter
 					</h1>
 
 					<p class="hero__subtitle body-lg" data-i18n="heroSubtitle">
@@ -325,6 +325,7 @@ const jsonLd = [
 					<!-- In-page Navigation Pills -->
 					<div class="hero__nav-pills">
 						<a class="hero__pill-link" href="#how-it-works" data-i18n="navHowItWorks">How it works</a>
+						<a class="hero__pill-link" href="#tax-tip-comparison" data-i18n="navTaxTip">Tax vs tip</a>
 						<a class="hero__pill-link" href="#tip-guide" data-i18n="navTipGuide">Tip guide</a>
 						<a class="hero__pill-link" href="#faq" data-i18n="navFaq">FAQ</a>
 						<a class="hero__pill-link" href="/about/" data-i18n="footerAbout">About us</a>
@@ -354,6 +355,55 @@ const jsonLd = [
 			</div>
 		</section>
 
+
+		<!-- ======================================================== -->
+		<!-- Content Band: Tip Before Tax vs After Tax (New SEO Section) -->
+		<!-- ======================================================== -->
+		<section class="content-band" id="tax-tip-comparison">
+			<div class="container">
+				<div class="section-header">
+					<p class="eyebrow" data-i18n="taxTipEyebrow">Tax & tip calculation</p>
+					<h2 class="section-title display-md" data-i18n="taxTipTitle">Should you tip before tax or after tax?</h2>
+					<p class="section-lead" data-i18n="taxTipLead">
+						This is one of the most common tipping questions. The short answer: <strong>standard etiquette says tip on the pre-tax subtotal</strong>, but many people tip on the final total for simplicity. Our calculator shows you both so you can decide.
+					</p>
+				</div>
+
+				<div class="comparison-grid">
+					<div class="comparison-card card-feature-sage">
+						<h3 class="comparison-card__title" data-i18n="tipBeforeTaxTitle">Tip on Pre-Tax Subtotal (Recommended)</h3>
+						<p class="comparison-card__desc" data-i18n="tipBeforeTaxDesc">
+							Calculate tip on the food & beverage total before sales tax is added. This is the traditional etiquette standard because tax is a government fee, not a service charge.
+						</p>
+						<div class="comparison-card__example">
+							<p><strong>Bill:</strong> $100.00</p>
+							<p><strong>Tax (8%):</strong> $8.00</p>
+							<p><strong>Tip (20% on $100):</strong> $20.00</p>
+							<p><strong>Total:</strong> $128.00</p>
+						</div>
+					</div>
+
+					<div class="comparison-card card-feature-sage">
+						<h3 class="comparison-card__title" data-i18n="tipAfterTaxTitle">Tip on Post-Tax Total (Common)</h3>
+						<p class="comparison-card__desc" data-i18n="tipAfterTaxDesc">
+							Calculate tip on the final bill including tax. Many diners do this for convenience, and some restaurants suggest tip amounts based on the post-tax total.
+						</p>
+						<div class="comparison-card__example">
+							<p><strong>Bill + Tax:</strong> $108.00</p>
+							<p><strong>Tip (20% on $108):</strong> $21.60</p>
+							<p><strong>Total:</strong> $129.60</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="comparison-note card-content">
+					<h3 data-i18n="tipDifferenceTitle">The difference</h3>
+					<p data-i18n="tipDifferenceDesc">
+						On a $100 bill with 8% tax and 20% tip, tipping on the total instead of the subtotal adds <strong>$1.60</strong> to your tip. On larger bills or higher tax rates, the difference grows. Use our calculator above to see exact numbers for your specific bill — just enter your subtotal and tax rate, and it calculates both ways automatically.
+					</p>
+				</div>
+			</div>
+		</section>
 
 		<!-- ======================================================== -->
 		<!-- Content Band 1: How It Works (White Canvas Band)         -->
@@ -388,7 +438,7 @@ const jsonLd = [
 			<div class="container">
 				<div class="section-header">
 					<p class="eyebrow" data-i18n="featuresEyebrow">Built for every table</p>
-					<h2 class="section-title display-md" data-i18n="featuresTitle">Everything you need, nothing you don’t</h2>
+					<h2 class="section-title display-md" data-i18n="featuresTitle">Everything you need, nothing you don't</h2>
 					<p class="section-lead" data-i18n="featuresLead">
 						Designed to be lightning fast, 100% private, accessible offline, and easy to use anywhere in the world.
 					</p>
@@ -953,6 +1003,75 @@ const jsonLd = [
 	}
 
 	/* ======================================================== */
+	/* Tax vs Tip Comparison Section                             */
+	/* ======================================================== */
+	.comparison-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--spacing-lg);
+	}
+
+	.comparison-card {
+		padding: var(--spacing-xl);
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
+	}
+
+	.comparison-card__title {
+		font-family: var(--font-sans);
+		font-size: 17px;
+		font-weight: 700;
+		color: var(--color-ink);
+		letter-spacing: -0.015em;
+		margin: 0;
+	}
+
+	.comparison-card__desc {
+		margin: 0;
+		color: var(--color-body);
+		font-size: 14px;
+		line-height: 22px;
+	}
+
+	.comparison-card__example {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		margin-top: var(--spacing-xs);
+		padding: var(--spacing-md);
+		background-color: var(--color-canvas-soft);
+		border-radius: var(--rounded-md);
+		font-size: 14px;
+		line-height: 20px;
+		color: var(--color-ink);
+	}
+
+	.comparison-card__example p {
+		margin: 0;
+	}
+
+	.comparison-note {
+		margin-top: var(--spacing-lg);
+		padding: var(--spacing-xl);
+	}
+
+	.comparison-note h3 {
+		font-family: var(--font-sans);
+		font-size: 17px;
+		font-weight: 700;
+		color: var(--color-ink);
+		margin: 0 0 var(--spacing-sm) 0;
+	}
+
+	.comparison-note p {
+		margin: 0;
+		color: var(--color-body);
+		font-size: 15px;
+		line-height: 24px;
+	}
+
+	/* ======================================================== */
 	/* Responsive Breakpoints (DESIGN.md lines 331-338)         */
 	/* ======================================================== */
 	@media (max-width: 1023px) {
@@ -985,6 +1104,11 @@ const jsonLd = [
 		.guide-grid {
 			grid-template-columns: 1fr;
 		}
+
+
+			.comparison-grid {
+				grid-template-columns: 1fr;
+			}
 
 		.cta-card {
 			flex-direction: column;

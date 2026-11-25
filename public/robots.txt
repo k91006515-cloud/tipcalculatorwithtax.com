@@ -1,4 +1,33 @@
+# Tip Calculator With Tax - Robots.txt
 User-agent: *
 Allow: /
 
-Sitemap: https://tipcalculatorwithtax.com/sitemap-index.xml
+# Disallow non-public/admin paths
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /.vscode/
+Disallow: /dist/
+Disallow: /build/
+Disallow: /*.map
+Disallow: /*.ts
+Disallow: /*.astro
+Disallow: /package.json
+Disallow: /tsconfig.json
+Disallow: /astro.config.mjs
+
+# Allow important assets
+Allow: /public/
+Allow: /favicon.ico
+Allow: /favicon.svg
+Allow: /favicon-96x96.png
+Allow: /apple-touch-icon.png
+Allow: /web-app-manifest-192x192.png
+Allow: /web-app-manifest-512x512.png
+Allow: /og-image.png
+Allow: /site.webmanifest
+
+# Sitemap location
+Sitemap: https://www.tipcalculatorwithtax.com/sitemap-index.xml
+
+# Host preference (canonical)
+Host: https://www.tipcalculatorwithtax.com
